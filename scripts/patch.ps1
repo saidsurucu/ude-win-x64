@@ -15,6 +15,7 @@ function Invoke-Patch {
   $jar = Join-Path $InputDir $MainJar
   if (-not (Test-Path $jar)) { throw "editor-app.jar bulunamadi; once download calistirin" }
 
+  # --- modern ikonlar (opsiyonel, ICONS=1) ---
   if ($env:ICONS -eq '1') {
     $iconScript = Join-Path $PSScriptRoot 'icons\apply-icons.ps1'
     if (Test-Path $iconScript) {
@@ -26,7 +27,21 @@ function Invoke-Patch {
   } else {
     Write-Ok "ikon modernizasyonu kapali (etkinlestirmek icin ICONS=1)"
   }
-  Write-Ok "yama tamam (Windows'ta jar buyuk olcude oldugu gibi kullaniliyor)"
+
+  # --- native Windows dosya diyalogu (varsayilan ACIK, NATIVE_DIALOGS=0 ile kapanir) ---
+  if ($env:NATIVE_DIALOGS -eq '0') {
+    Write-Ok "native dosya diyalogu kapali (NATIVE_DIALOGS=0)"
+  } else {
+    $ndScript = Join-Path $PSScriptRoot 'nativedialog\apply-nativedialog.ps1'
+    if (Test-Path $ndScript) {
+      Write-Ok "native Windows ac/kaydet diyalogu uygulaniyor"
+      & $ndScript -Jar $jar
+    } else {
+      Write-Warn2 "nativedialog\apply-nativedialog.ps1 yok; atlaniyor"
+    }
+  }
+
+  Write-Ok "yama tamam"
 }
 
 if ($MyInvocation.InvocationName -ne '.') { Invoke-Patch }

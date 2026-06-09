@@ -19,6 +19,9 @@ Bu yapı şunları getirir:
 - ☕ **Gömülü Java 11** — ayrıca Java kurmanıza gerek yok, runtime `.exe` içinde gelir.
 - 🖋️ **E-imza / akıllı kart** — `javax.smartcardio` Windows'un `winscard.dll`'i üzerinden çalışır
   (ayrıca [AKİS Windows sürücüsü](https://www.kamusm.gov.tr) kurulmalıdır).
+- 📂 **Native Windows aç/kaydet diyaloğu** — arkaik Swing `JFileChooser` yerine gerçek Win32
+  diyaloğu (`java.awt.FileDialog`). **Varsayılan açık** (`$env:NATIVE_DIALOGS='0'` ile kapatılır;
+  klasör-seçme gereken yerlerde otomatik Swing'e geri düşer).
 - 🎨 **Modern ikonlar** — Material Design ikonları, HiDPI keskinliğinde (`@2x` multi-resolution).
   Tek satırlık kurulumda **varsayılan açık**; manuel derlemede `-Icons` ile.
 - 📄 **`.udf` çift-tıkla aç** — kurulum dosya ilişkilendirmesini otomatik kaydeder.
@@ -53,6 +56,7 @@ Seçenekler:
 |---|---|
 | `.\build.ps1` | Tam yapı (araç temini + indirme + paketleme) |
 | `.\build.ps1 -Icons` | Modern Material ikonlarla |
+| `.\build.ps1 -NoNativeDialogs` | Native dosya diyaloğunu kapat (Swing'de kal) |
 | `.\build.ps1 -Sign` | Üretilen EXE'yi `signtool` ile imzala |
 | `.\build.ps1 -Only package` | Sadece paketleme fazı (tekrar derleme) |
 | `$env:UDE_URL="..."; .\build.ps1` | Resmî paket linkini elle ver |
@@ -67,7 +71,7 @@ kurulum dosyasına paketler:
 
 1. **deps** — Temurin JDK 17 (jpackage için) + JDK 11 (gömülü runtime için) + WiX Toolset 3.x indirilir.
 2. **download** — `uyap.gov.tr/Uyap-Editor` sayfasından resmî paket çekilir, `editor-app.jar` çıkarılır.
-3. **patch** — Windows'ta yamaya gerek yoktur (bkz. aşağıda); yalnız `-Icons` verilirse ikonlar uygulanır.
+3. **patch** — varsayılan olarak native dosya diyaloğu köprüsü (Javassist) uygulanır; `-Icons` verilirse modern ikonlar da eklenir. Mac portundaki diğer yamalara gerek yoktur (bkz. aşağıda).
 4. **package** — JDK 11'den `jlink` ile minimal runtime üretilir, `jpackage --type exe` ile `.exe` kurulum dosyası oluşturulur.
 
 ### macOS portundan farklar

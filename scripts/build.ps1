@@ -8,6 +8,7 @@
 #   -Only <faz> sadece tek faz calistir (deps|download|patch|package)
 param(
   [switch]$Icons,
+  [switch]$NoNativeDialogs,
   [switch]$Sign,
   [string]$UdeUrl,
   [ValidateSet('deps','download','patch','package','all')]
@@ -19,9 +20,10 @@ param(
 . "$PSScriptRoot\patch.ps1"
 . "$PSScriptRoot\package.ps1"
 
-if ($Icons)  { $env:ICONS = '1' }
-if ($Sign)   { $env:SIGN  = '1' }
-if ($UdeUrl) { $env:UDE_URL = $UdeUrl }
+if ($Icons)           { $env:ICONS = '1' }
+if ($NoNativeDialogs) { $env:NATIVE_DIALOGS = '0' }
+if ($Sign)            { $env:SIGN  = '1' }
+if ($UdeUrl)          { $env:UDE_URL = $UdeUrl }
 
 $sw = [System.Diagnostics.Stopwatch]::StartNew()
 Write-Host ""

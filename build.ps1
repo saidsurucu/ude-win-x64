@@ -5,6 +5,7 @@
 #   .\build.ps1 -Only package  # sadece paketleme
 param(
   [switch]$Icons,
+  [switch]$NoNativeDialogs,
   [switch]$Sign,
   [string]$UdeUrl,
   [ValidateSet('deps','download','patch','package','all')]
