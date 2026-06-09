@@ -1,0 +1,31 @@
+name: build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-exe:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Yapiyi calistir (.exe uret)
+        shell: pwsh
+        run: .\build.ps1
+
+      - name: EXE uretildi mi dogrula
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem dist -Filter *.exe -ErrorAction SilentlyContinue | Select-Object -First 1
+          if (-not $exe) { throw "EXE installer uretilemedi" }
+          Write-Host "OK: $($exe.Name) ($([math]::Round($exe.Length/1MB,1)) MB)"
+
+      - name: EXE'yi artifact olarak yukle
+        uses: actions/upload-artifact@v4
+        with:
+          name: UyapDokumanEditoru-windows-x64
+          path: dist/*.exe
+          if-no-files-found: error

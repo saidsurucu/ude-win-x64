@@ -1,0 +1,15 @@
+# indirilen araclar ve paketler
+/vendor/
+/downloads/
+
+# build ciktilari
+/build/
+/dist/
+
+# kazara kalan bos klon
+/temp_clone/
+
+# editor
+*.swp
+.DS_Store
+Thumbs.db

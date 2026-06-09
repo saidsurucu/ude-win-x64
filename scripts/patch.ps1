@@ -1,0 +1,32 @@
+# patch.ps1 - editor-app.jar uzerinde Windows yamalari
+#
+# NOT: macOS portundaki yamalarin cogu Windows'ta GEREKSIZ:
+#  - sqlite-jdbc swap: jar zaten native/Windows/amd64/sqlitejdbc.dll iceriyor -> swap yok
+#  - com.apple.eawt strip / eawt-shim: jar kendi eawt siniflarini gomulu getiriyor;
+#    Windows JDK'da java.desktop icinde com.apple.eawt YOK -> cakisma yok, Mac kod yolu
+#    Windows'ta tetiklenmez (inert) -> strip/shim yok
+#  - Cmd remap / trackpad zoom: Mac'e ozel -> yok
+#
+# Geriye yalniz OPSIYONEL ikon modernizasyonu kaliyor (ICONS=1).
+. "$PSScriptRoot\common.ps1"
+
+function Invoke-Patch {
+  Write-Step "Yama asamasi"
+  $jar = Join-Path $InputDir $MainJar
+  if (-not (Test-Path $jar)) { throw "editor-app.jar bulunamadi; once download calistirin" }
+
+  if ($env:ICONS -eq '1') {
+    $iconScript = Join-Path $PSScriptRoot 'icons\apply-icons.ps1'
+    if (Test-Path $iconScript) {
+      Write-Ok "ICONS=1 -> modern ikonlar uygulaniyor"
+      & $iconScript -Jar $jar
+    } else {
+      Write-Warn2 "ICONS=1 verildi ama icons\apply-icons.ps1 yok; atlaniyor"
+    }
+  } else {
+    Write-Ok "ikon modernizasyonu kapali (etkinlestirmek icin ICONS=1)"
+  }
+  Write-Ok "yama tamam (Windows'ta jar buyuk olcude oldugu gibi kullaniliyor)"
+}
+
+if ($MyInvocation.InvocationName -ne '.') { Invoke-Patch }
