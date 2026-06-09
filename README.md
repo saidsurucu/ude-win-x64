@@ -19,7 +19,8 @@ Bu yapı şunları getirir:
 - ☕ **Gömülü Java 11** — ayrıca Java kurmanıza gerek yok, runtime `.exe` içinde gelir.
 - 🖋️ **E-imza / akıllı kart** — `javax.smartcardio` Windows'un `winscard.dll`'i üzerinden çalışır
   (ayrıca [AKİS Windows sürücüsü](https://www.kamusm.gov.tr) kurulmalıdır).
-- 🎨 **Modern ikonlar** (opsiyonel, `-Icons` ile) — Material Design ikonları, HiDPI keskinliğinde.
+- 🎨 **Modern ikonlar** — Material Design ikonları, HiDPI keskinliğinde (`@2x` multi-resolution).
+  Tek satırlık kurulumda **varsayılan açık**; manuel derlemede `-Icons` ile.
 - 📄 **`.udf` çift-tıkla aç** — kurulum dosya ilişkilendirmesini otomatik kaydeder.
 
 ## Tek satırlık kurulum
@@ -31,8 +32,9 @@ irm https://raw.githubusercontent.com/saidsurucu/ude-win-x64/main/kur.ps1 | iex
 ```
 
 Bu komut gerekli araçları (JDK 11/17 + WiX) ve resmî UDE paketini indirir, `.exe`
-kurulum dosyasını üretir ve kurulum sihirbazını başlatır. İlk çalıştırma birkaç dakika sürer
-(~600 MB araç indirilir; hepsi depo altındaki `vendor/` içinde kalır, sistem geneline dokunmaz).
+kurulum dosyasını üretir ve kurulum sihirbazını başlatır. **Modern ikonlar varsayılan olarak
+açıktır** (devre dışı bırakmak için komuttan önce `$env:ICONS='0'` verin). İlk çalıştırma birkaç
+dakika sürer (~600 MB araç indirilir; hepsi depo altındaki `vendor/` içinde kalır, sistem geneline dokunmaz).
 
 > **SmartScreen:** Üretilen `.exe` imzasızdır. Uyarı çıkarsa **"Daha fazla bilgi" → "Yine de
 > çalıştır"** deyin. İsterseniz kendi sertifikanızla imzalamak için `-Sign` (bkz. aşağıda).

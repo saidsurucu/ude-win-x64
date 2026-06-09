@@ -43,7 +43,8 @@ if ($haveGit -and (Test-Path (Join-Path $WorkDir '.git'))) {
 # --- 2) yapiyi calistir ---
 Say "yapi baslatiliyor (araclar + UDE indiriliyor; ilk sefer birkac dakika surebilir)"
 $build = Join-Path $WorkDir 'build.ps1'
-$icons = if ($env:ICONS -eq '1') { @('-Icons') } else { @() }
+# Modern ikonlar varsayilan ACIK (devre disi: $env:ICONS='0')
+$icons = if ($env:ICONS -eq '0') { @() } else { @('-Icons') }
 powershell -NoProfile -ExecutionPolicy Bypass -File $build @icons
 if ($LASTEXITCODE -ne 0) { throw "yapi basarisiz oldu (exit $LASTEXITCODE)" }
 
