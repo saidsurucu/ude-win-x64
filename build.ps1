@@ -14,6 +14,7 @@ param(
   [switch]$NoImgResize,
   [switch]$NoAntet,
   [switch]$NoPdfFresh,
+  [switch]$NoPasteImg,
   [switch]$Skin,
   [switch]$Sign,
   [string]$UdeUrl,

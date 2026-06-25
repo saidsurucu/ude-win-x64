@@ -68,7 +68,8 @@ function Invoke-Patch {
     @{ env='IMGFULL';   name='IMGFULL';   script='imagefull\apply-imagefull.ps1' },
     @{ env='IMGRESIZE'; name='IMGRESIZE'; script='imgresize\apply-imgresize.ps1' },
     @{ env='ANTET';     name='ANTET';     script='antet\apply-antet.ps1' },
-    @{ env='PDFFRESH';  name='PDFFRESH';  script='pdffresh\apply-pdffresh.ps1' }
+    @{ env='PDFFRESH';  name='PDFFRESH';  script='pdffresh\apply-pdffresh.ps1' },
+    @{ env='PASTEIMG';  name='PASTEIMG';  script='pasteimg\apply-pasteimg.ps1' }
   )) {
     if ([Environment]::GetEnvironmentVariable($feat.env) -eq '0') {
       Write-Ok "$($feat.name) kapali ($($feat.env)=0)"
