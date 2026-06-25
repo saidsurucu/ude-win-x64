@@ -63,6 +63,19 @@ function Invoke-Patch {
     } else { Write-Warn2 "tabledelete\apply-tabledelete.ps1 yok; atlaniyor" }
   }
 
+  # --- PASTERICH (harici stilli yapistirma) + PLAINPASTE (varsayilan ACIK, =0 kapatir) ---
+  # NOT: PASTEIMG port edilmedi - Mac'e ozgu (Windows'ta panodan imaj zaten BufferedImage doner, sorunsuz).
+  if ($env:PASTERICH -eq '0') {
+    Write-Ok "pasterich kapali (PASTERICH=0)"
+  } else {
+    $prScript = Join-Path $PSScriptRoot 'pasterich\apply-pasterich.ps1'
+    if (Test-Path $prScript) {
+      $pp = ($env:PLAINPASTE -ne '0')
+      Write-Ok ("PASTERICH uygulaniyor" + $(if($pp){' + PLAINPASTE'}))
+      & $prScript -Jar $jar -PlainPaste:$pp
+    } else { Write-Warn2 "pasterich\apply-pasterich.ps1 yok; atlaniyor" }
+  }
+
   # --- SKIN (spike; varsayilan KAPALI, SKIN=1 ile acilir) ---
   if ($env:SKIN -eq '1') {
     $skinScript = Join-Path $PSScriptRoot 'skin\apply-skin.ps1'

@@ -8,6 +8,8 @@ param(
   [switch]$NoNativeDialogs,
   [switch]$NoLiveToggle,
   [switch]$NoTableDelete,
+  [switch]$NoPasteRich,
+  [switch]$NoPlainPaste,
   [switch]$Skin,
   [switch]$Sign,
   [string]$UdeUrl,
