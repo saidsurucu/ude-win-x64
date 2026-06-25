@@ -63,6 +63,23 @@ function Invoke-Patch {
     } else { Write-Warn2 "tabledelete\apply-tabledelete.ps1 yok; atlaniyor" }
   }
 
+  # --- IMGFULL / IMGRESIZE / ANTET / PDFFRESH (varsayilan ACIK, =0 kapatir) ---
+  foreach ($feat in @(
+    @{ env='IMGFULL';   name='IMGFULL';   script='imagefull\apply-imagefull.ps1' },
+    @{ env='IMGRESIZE'; name='IMGRESIZE'; script='imgresize\apply-imgresize.ps1' },
+    @{ env='ANTET';     name='ANTET';     script='antet\apply-antet.ps1' },
+    @{ env='PDFFRESH';  name='PDFFRESH';  script='pdffresh\apply-pdffresh.ps1' },
+    @{ env='PASTEIMG';  name='PASTEIMG';  script='pasteimg\apply-pasteimg.ps1' }
+  )) {
+    if ([Environment]::GetEnvironmentVariable($feat.env) -eq '0') {
+      Write-Ok "$($feat.name) kapali ($($feat.env)=0)"
+    } else {
+      $fs = Join-Path $PSScriptRoot $feat.script
+      if (Test-Path $fs) { Write-Ok "$($feat.name) uygulaniyor"; & $fs -Jar $jar }
+      else { Write-Warn2 "$($feat.script) yok; atlaniyor" }
+    }
+  }
+
   # --- PASTERICH (harici stilli yapistirma) + PLAINPASTE (varsayilan ACIK, =0 kapatir) ---
   # NOT: PASTEIMG port edilmedi - Mac'e ozgu (Windows'ta panodan imaj zaten BufferedImage doner, sorunsuz).
   if ($env:PASTERICH -eq '0') {
