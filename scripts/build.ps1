@@ -13,6 +13,10 @@ param(
   [switch]$NoTableDelete,
   [switch]$NoPasteRich,
   [switch]$NoPlainPaste,
+  [switch]$NoImgFull,
+  [switch]$NoImgResize,
+  [switch]$NoAntet,
+  [switch]$NoPdfFresh,
   [switch]$Skin,
   [switch]$Sign,
   [string]$UdeUrl,
@@ -31,6 +35,10 @@ if ($NoLiveToggle)    { $env:LIVETOGGLE = '0' }
 if ($NoTableDelete)   { $env:TABLEDELETE = '0' }
 if ($NoPasteRich)     { $env:PASTERICH = '0' }
 if ($NoPlainPaste)    { $env:PLAINPASTE = '0' }
+if ($NoImgFull)       { $env:IMGFULL = '0' }
+if ($NoImgResize)     { $env:IMGRESIZE = '0' }
+if ($NoAntet)         { $env:ANTET = '0' }
+if ($NoPdfFresh)      { $env:PDFFRESH = '0' }
 if ($Skin)            { $env:SKIN = '1' }
 if ($Sign)            { $env:SIGN  = '1' }
 if ($UdeUrl)          { $env:UDE_URL = $UdeUrl }
