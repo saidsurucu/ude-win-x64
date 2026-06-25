@@ -40,7 +40,8 @@ Write-Ok "skin yardimcilari derleniyor"
   (Join-Path $skinDir 'macosskin\FlatEtchedBorder.java') `
   (Join-Path $skinDir 'macosskin\IconDarken.java') `
   (Join-Path $skinDir 'macosskin\ModeAwareImage.java') `
-  (Join-Path $skinDir 'macosskin\DarkPage.java')
+  (Join-Path $skinDir 'macosskin\DarkPage.java') `
+  (Join-Path $skinDir 'macosskin\ModeSwitch.java')
 if ($LASTEXITCODE -ne 0) { throw "skin yardimcilari derlenemedi (Substance surumu farkli olabilir)" }
 
 # colorschemes resource'larini helper agacina kopyala (resource yolu /macosskin/*.colorschemes)
@@ -61,3 +62,14 @@ if ($LASTEXITCODE -ne 0) { throw "SkinPatch calismadi" }
 & $jarTool uf $Jar -C $out .
 if ($LASTEXITCODE -ne 0) { throw "yamali siniflar jar'a eklenemedi" }
 Write-Ok "SKIN uygulandi"
+
+# --- winlook agent jar (7d): canli gecis + picker; InputDir'e (jpackage --input) ---
+$wl = Join-Path $work 'winlook'; if (Test-Path $wl) { Remove-Item $wl -Recurse -Force }; New-Dir $wl
+& $javac --release 11 -encoding UTF-8 -d $wl (Join-Path $skinDir 'winlook\WinLook.java')
+if ($LASTEXITCODE -ne 0) { throw "WinLook agent derlenemedi" }
+$mf = Join-Path $wl 'MANIFEST.MF'
+"Premain-Class: winlook.WinLook`r`nAgent-Class: winlook.WinLook" | Set-Content $mf -Encoding ascii
+$wlJar = Join-Path (Split-Path $Jar -Parent) 'winlook.jar'
+& $jarTool cfm $wlJar $mf -C $wl winlook
+if ($LASTEXITCODE -ne 0) { throw "winlook.jar uretilemedi" }
+Write-Ok "winlook.jar uretildi -> $(Split-Path $wlJar -Parent)"
