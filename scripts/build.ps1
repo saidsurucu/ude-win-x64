@@ -11,6 +11,7 @@ param(
   [switch]$NoNativeDialogs,
   [switch]$NoLiveToggle,
   [switch]$NoTableDelete,
+  [switch]$Skin,
   [switch]$Sign,
   [string]$UdeUrl,
   [ValidateSet('deps','download','patch','package','all')]
@@ -26,6 +27,7 @@ if ($Icons)           { $env:ICONS = '1' }
 if ($NoNativeDialogs) { $env:NATIVE_DIALOGS = '0' }
 if ($NoLiveToggle)    { $env:LIVETOGGLE = '0' }
 if ($NoTableDelete)   { $env:TABLEDELETE = '0' }
+if ($Skin)            { $env:SKIN = '1' }
 if ($Sign)            { $env:SIGN  = '1' }
 if ($UdeUrl)          { $env:UDE_URL = $UdeUrl }
 

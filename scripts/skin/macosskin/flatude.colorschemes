@@ -1,0 +1,65 @@
+FlatUde Active {
+    kind=Light
+    colorUltraLight=#F2F2F2
+    colorExtraLight=#E4E4E4
+    colorLight=#D0D0D0
+    colorMid=#ABABAB
+    colorDark=#5E5E5E
+    colorUltraDark=#3D3D3D
+    colorForeground=#262626
+}
+
+FlatUde Default {
+    kind=Light
+    colorUltraLight=#FFFFFF
+    colorExtraLight=#F5F5F5
+    colorLight=#EBEBEB
+    colorMid=#D6D6D6
+    colorDark=#8F8F8F
+    colorUltraDark=#6E6E6E
+    colorForeground=#262626
+}
+
+FlatUde Disabled {
+    kind=Light
+    colorUltraLight=#F2F2F2
+    colorExtraLight=#EDEDED
+    colorLight=#E7E7E7
+    colorMid=#DEDEDE
+    colorDark=#C9C9C9
+    colorUltraDark=#B0B0B0
+    colorForeground=#A0A0A0
+}
+
+FlatUde Rollover Unselected {
+    kind=Light
+    colorUltraLight=#E9E9E9
+    colorExtraLight=#DEDEDE
+    colorLight=#CCCCCC
+    colorMid=#A3A3A3
+    colorDark=#6E6E6E
+    colorUltraDark=#525252
+    colorForeground=#262626
+}
+
+FlatUde Rollover Selected {
+    kind=Light
+    colorUltraLight=#D2D2D2
+    colorExtraLight=#BCBCBC
+    colorLight=#9F9F9F
+    colorMid=#7A7A7A
+    colorDark=#565656
+    colorUltraDark=#3A3A3A
+    colorForeground=#1A1A1A
+}
+
+FlatUde Pressed {
+    kind=Dark
+    colorUltraLight=#707070
+    colorExtraLight=#5F5F5F
+    colorLight=#4F4F4F
+    colorMid=#3F3F3F
+    colorDark=#2E2E2E
+    colorUltraDark=#222222
+    colorForeground=#FAFAFA
+}
