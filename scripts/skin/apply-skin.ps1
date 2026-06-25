@@ -40,7 +40,8 @@ Write-Ok "skin yardimcilari derleniyor"
   (Join-Path $skinDir 'macosskin\FlatEtchedBorder.java') `
   (Join-Path $skinDir 'macosskin\IconDarken.java') `
   (Join-Path $skinDir 'macosskin\ModeAwareImage.java') `
-  (Join-Path $skinDir 'macosskin\DarkPage.java')
+  (Join-Path $skinDir 'macosskin\DarkPage.java') `
+  (Join-Path $skinDir 'macosskin\ModeSwitch.java')
 if ($LASTEXITCODE -ne 0) { throw "skin yardimcilari derlenemedi (Substance surumu farkli olabilir)" }
 
 # colorschemes resource'larini helper agacina kopyala (resource yolu /macosskin/*.colorschemes)
