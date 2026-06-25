@@ -19,7 +19,7 @@ ediyor. Tüm yama hedefleri (Substance `setSkin`, obfuscate `aF.run` açılış 
 | Koyu palet (`appearance=system` YOK) | **EVET** | `skin-dark.png` — şerit/krom koyu, Substance'tan |
 | Kayıt defteri koyu-mod tespiti | **EVET** | `DarkMode.isDark()` registry `AppsUseLightTheme` ile tutarlı; pref override (dark/light/system) çalışıyor |
 | Aqua put'ları düşürüldü → Substance scrollbar | **EVET** | başlangıç trace'inde HATA yok; eksik-UIClass yok (Aqua referansı kalmadı) |
-| PDF export (EDT nötrleştirme) | **BYTECODE ONAYLI / runtime BEKLİYOR** | `testComponent*ThreadingViolation` gövdeleri boşaltıldı (build çıktısı); elle PDF testi önerilir |
+| PDF export (EDT nötrleştirme) | **EVET** | elle doğrulandı — SKIN açıkken "PDF Olarak Kaydet" geçerli PDF üretti (0-bayt/spinner yok) |
 | Flamingo kanaryası (yama yolu açık) | **EVET** | build: `FLAMINGO KANARYASI ... (yol ACIK)`; grup başlık kutuları kalktı |
 | Başlangıç sırası (skin UI'dan önce) | **EVET** | trace: `ACILIS skin kuruldu dark=...` (aF.run, ilk frame'den önce) |
 | Substance API jar'da mevcut | **EVET** | yardımcılar jar'a karşı `--release 11` derlendi (NebulaSkin, painter'lar, bundle, FontSet) |
