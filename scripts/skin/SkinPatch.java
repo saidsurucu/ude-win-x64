@@ -144,7 +144,9 @@ public class SkinPatch {
             javassist.CtConstructor[] rctors = ruler.getDeclaredConstructors();
             for (int rci = 0; rci < rctors.length; rci++) {
                 rctors[rci].insertAfter(
-                    "{ this.setColor_border(macosskin.DarkMode.canvasColor()); }");
+                    "{ this.setColor_border(macosskin.DarkMode.canvasColor());"
+                  + "  this.setBackground(macosskin.DarkMode.canvasColor());"
+                  + "  this.setOpaque(true); }");
             }
             ruler.instrument(new ExprEditor() {
                 public void edit(FieldAccess f) throws javassist.CannotCompileException {
