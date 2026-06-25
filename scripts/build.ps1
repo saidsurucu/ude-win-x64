@@ -11,6 +11,8 @@ param(
   [switch]$NoNativeDialogs,
   [switch]$NoLiveToggle,
   [switch]$NoTableDelete,
+  [switch]$NoPasteRich,
+  [switch]$NoPlainPaste,
   [switch]$Skin,
   [switch]$Sign,
   [string]$UdeUrl,
@@ -27,6 +29,8 @@ if ($Icons)           { $env:ICONS = '1' }
 if ($NoNativeDialogs) { $env:NATIVE_DIALOGS = '0' }
 if ($NoLiveToggle)    { $env:LIVETOGGLE = '0' }
 if ($NoTableDelete)   { $env:TABLEDELETE = '0' }
+if ($NoPasteRich)     { $env:PASTERICH = '0' }
+if ($NoPlainPaste)    { $env:PLAINPASTE = '0' }
 if ($Skin)            { $env:SKIN = '1' }
 if ($Sign)            { $env:SIGN  = '1' }
 if ($UdeUrl)          { $env:UDE_URL = $UdeUrl }
