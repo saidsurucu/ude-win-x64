@@ -6,6 +6,8 @@
 param(
   [switch]$Icons,
   [switch]$NoNativeDialogs,
+  [switch]$NoLiveToggle,
+  [switch]$NoTableDelete,
   [switch]$Sign,
   [string]$UdeUrl,
   [ValidateSet('deps','download','patch','package','all')]
