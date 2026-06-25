@@ -29,7 +29,7 @@ if (Test-Path $work) { Remove-Item $work -Recurse -Force }
 New-Dir $helper; New-Dir $out
 
 Write-Ok "yardimci siniflar derleniyor"
-& $javac --release 11 -d $helper `
+& $javac --release 11 -encoding UTF-8 -d $helper `
   (Join-Path $PSScriptRoot 'com\udewin\tabledelete\TableDelete.java') `
   (Join-Path $PSScriptRoot 'com\udewin\tabledelete\TableDeleteInstaller.java')
 if ($LASTEXITCODE -ne 0) { throw "yardimci siniflar derlenemedi" }
@@ -39,7 +39,7 @@ if ($LASTEXITCODE -ne 0) { throw "yardimci siniflar derlenemedi" }
 if ($LASTEXITCODE -ne 0) { throw "yardimcilar jar'a eklenemedi" }
 
 Write-Ok "TableDeletePatch derleniyor"
-& $javac --release 11 -cp "$jvs;$helper" -d $work (Join-Path $PSScriptRoot 'TableDeletePatch.java')
+& $javac --release 11 -encoding UTF-8 -cp "$jvs;$helper" -d $work (Join-Path $PSScriptRoot 'TableDeletePatch.java')
 if ($LASTEXITCODE -ne 0) { throw "patcher derlenemedi" }
 Write-Ok "TableDeletePatch calistiriliyor"
 & $java -cp "$work;$jvs;$helper" TableDeletePatch $Jar $helper $out
