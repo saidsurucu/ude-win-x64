@@ -63,6 +63,17 @@ function Invoke-Patch {
     } else { Write-Warn2 "tabledelete\apply-tabledelete.ps1 yok; atlaniyor" }
   }
 
+  # --- SKIN (spike; varsayilan KAPALI, SKIN=1 ile acilir) ---
+  if ($env:SKIN -eq '1') {
+    $skinScript = Join-Path $PSScriptRoot 'skin\apply-skin.ps1'
+    if (Test-Path $skinScript) {
+      Write-Ok "SKIN uygulaniyor"
+      & $skinScript -Jar $jar
+    } else { Write-Warn2 "skin\apply-skin.ps1 yok; atlaniyor" }
+  } else {
+    Write-Ok "SKIN kapali (etkinlestirmek icin SKIN=1)"
+  }
+
   Write-Ok "yama tamam"
 }
 
