@@ -174,7 +174,7 @@ public final class TableDelete {
         log("tryDelete forward=" + forward + " caret=" + caret + " target=" + target
                 + " docClass=" + d.getClass().getName());
         try {
-            Method f = d.getClass().getMethod("f", int.class);  // wp.model.v.f(int) (miras)
+            Method f = tableRemoveMethod(d);  // void f(int) = "Tablo Sil" primitifi
             f.invoke(d, target);
             int len = d.getLength();
             tc.setCaretPosition(Math.min(target, len));
@@ -194,7 +194,7 @@ public final class TableDelete {
     private static boolean deleteSelectionWithTables(JTextComponent tc, Document d, DocView dv, int selS, int selE) {
         log("deleteSelectionWithTables sel=[" + selS + "," + selE + "] docClass=" + d.getClass().getName());
         try {
-            Method f = d.getClass().getMethod("f", int.class);
+            Method f = tableRemoveMethod(d);
             Position startPos = d.createPosition(selS);
             Position endPos = d.createPosition(selE);
             int guard = 0;
@@ -212,6 +212,26 @@ public final class TableDelete {
             log(unwrap("deleteSelectionWithTables HATA", t));
             return false;   // başarısız → normal seçim silmeye devret
         }
+    }
+
+    /**
+     * Belge sınıfında "Tablo Sil"in çağırdığı void f(int) overload'unu döndürür.
+     * model.v'de f(int)'in ÜÇ overload'u var (Element/boolean/void); getMethod
+     * bunlardan birini KEYFÎ seçer (JDK build'ine göre değişir: Temurin boolean
+     * f(int)'i döndürür → tek satır siler "cell cell"). Yapısal tablo-silme
+     * primitifi void f(int)'tir (text.ct "Tablo Sil" eylemi bunu çağırır:
+     * DocumentEx.f:(I)V), bu yüzden dönüş tipi void olan overload AÇIKÇA seçilir.
+     */
+    private static Method tableRemoveMethod(Document d) throws NoSuchMethodException {
+        for (Method m : d.getClass().getMethods()) {
+            if (m.getName().equals("f")
+                    && m.getReturnType() == void.class
+                    && m.getParameterCount() == 1
+                    && m.getParameterTypes()[0] == int.class) {
+                return m;
+            }
+        }
+        throw new NoSuchMethodException("void f(int) bulunamadi: " + d.getClass().getName());
     }
 
     /** InvocationTargetException'ı açıp ilk 12 stack çerçevesiyle birlikte metne çevirir. */
