@@ -59,19 +59,41 @@ public final class IconDarken {
             Image light = ((ModeAwareImage) img).lightImage();
             Image scaled;
             if (light instanceof BaseMultiResolutionImage) {
-                BaseMultiResolutionImage mr = (BaseMultiResolutionImage) light;
-                Image lo = mr.getResolutionVariant(w, h)
-                    .getScaledInstance(w, h, Image.SCALE_SMOOTH);
-                Image hi = mr.getResolutionVariant(w * 2, h * 2)
-                    .getScaledInstance(w * 2, h * 2, Image.SCALE_SMOOTH);
+                // Windows kesirli olcek (orn. 150%) keskinligi: EN YUKSEK kaynak
+                // varyanttan (genelde @2x) TEK bicubic olcekle; ust varyant olarak
+                // ham @2x korunur (AWT, cihaz boyutuna tek yuksek-kalite downscale
+                // yapar). Eski getScaledInstance(SCALE_SMOOTH) cift-olcek + bilinear
+                // upscale -> 1.5x'te bulanik/blokluydu.
+                java.util.List<Image> vs =
+                    ((BaseMultiResolutionImage) light).getResolutionVariants();
+                Image best = vs.get(vs.size() - 1);
+                Image lo = bicubic(best, w, h);
+                Image hi = (best.getWidth(null) >= w * 2) ? best : bicubic(best, w * 2, h * 2);
                 scaled = new BaseMultiResolutionImage(new Image[] { lo, hi });
             } else {
-                scaled = light.getScaledInstance(w, h, Image.SCALE_SMOOTH);
+                scaled = bicubic(light, w, h);
             }
             return new javax.swing.ImageIcon(new ModeAwareImage(scaled));
         } catch (Throwable t) {
             return null;
         }
+    }
+
+    /** Kaynagi (w,h)'ye TEK bicubic + yuksek-kalite render ile olcekler
+     *  (Windows kesirli-olcek keskinligi). */
+    static Image bicubic(Image src, int w, int h) {
+        if (w <= 0 || h <= 0) return src;
+        BufferedImage bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        java.awt.Graphics2D g = bi.createGraphics();
+        g.setRenderingHint(java.awt.RenderingHints.KEY_INTERPOLATION,
+            java.awt.RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        g.setRenderingHint(java.awt.RenderingHints.KEY_RENDERING,
+            java.awt.RenderingHints.VALUE_RENDER_QUALITY);
+        g.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING,
+            java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
+        g.drawImage(src, 0, 0, w, h, null);
+        g.dispose();
+        return bi;
     }
 
     private static Image lighten(Image src) {
