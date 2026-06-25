@@ -28,7 +28,16 @@ Write-Ok "skin yardimcilari derleniyor"
   (Join-Path $skinDir 'macosskin\DarkMode.java') `
   (Join-Path $skinDir 'macosskin\FlatUdeSkin.java') `
   (Join-Path $skinDir 'macosskin\FlatUdeDarkSkin.java') `
-  (Join-Path $skinDir 'macosskin\FlatFontPolicy.java')
+  (Join-Path $skinDir 'macosskin\FlatFontPolicy.java') `
+  (Join-Path $skinDir 'macosskin\WordButton.java') `
+  (Join-Path $skinDir 'macosskin\WordTabs.java') `
+  (Join-Path $skinDir 'macosskin\WordCombo.java') `
+  (Join-Path $skinDir 'macosskin\WordCheck.java') `
+  (Join-Path $skinDir 'macosskin\WordField.java') `
+  (Join-Path $skinDir 'macosskin\WordTooltip.java') `
+  (Join-Path $skinDir 'macosskin\PopupRemap.java') `
+  (Join-Path $skinDir 'macosskin\MenuMarks.java') `
+  (Join-Path $skinDir 'macosskin\FlatEtchedBorder.java')
 if ($LASTEXITCODE -ne 0) { throw "skin yardimcilari derlenemedi (Substance surumu farkli olabilir)" }
 
 # colorschemes resource'larini helper agacina kopyala (resource yolu /macosskin/*.colorschemes)
