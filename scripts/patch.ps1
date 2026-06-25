@@ -41,6 +41,28 @@ function Invoke-Patch {
     }
   }
 
+  # --- LIVETOGGLE (varsayilan ACIK, =0 ile kapanir) ---
+  if ($env:LIVETOGGLE -eq '0') {
+    Write-Ok "livetoggle kapali (LIVETOGGLE=0)"
+  } else {
+    $ltScript = Join-Path $PSScriptRoot 'livetoggle\apply-livetoggle.ps1'
+    if (Test-Path $ltScript) {
+      Write-Ok "LIVETOGGLE uygulaniyor"
+      & $ltScript -Jar $jar
+    } else { Write-Warn2 "livetoggle\apply-livetoggle.ps1 yok; atlaniyor" }
+  }
+
+  # --- TABLEDELETE (varsayilan ACIK, =0 ile kapanir) ---
+  if ($env:TABLEDELETE -eq '0') {
+    Write-Ok "tabledelete kapali (TABLEDELETE=0)"
+  } else {
+    $tdScript = Join-Path $PSScriptRoot 'tabledelete\apply-tabledelete.ps1'
+    if (Test-Path $tdScript) {
+      Write-Ok "TABLEDELETE uygulaniyor"
+      & $tdScript -Jar $jar
+    } else { Write-Warn2 "tabledelete\apply-tabledelete.ps1 yok; atlaniyor" }
+  }
+
   Write-Ok "yama tamam"
 }
 
