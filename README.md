@@ -22,9 +22,27 @@ Bu yapı şunları getirir:
 - 📂 **Native Windows aç/kaydet diyaloğu** — arkaik Swing `JFileChooser` yerine gerçek Win32
   diyaloğu (`java.awt.FileDialog`). **Varsayılan açık** (`$env:NATIVE_DIALOGS='0'` ile kapatılır;
   klasör-seçme gereken yerlerde otomatik Swing'e geri düşer).
-- 🎨 **Modern ikonlar** — Material Design ikonları, HiDPI keskinliğinde (`@2x` multi-resolution).
-  Tek satırlık kurulumda **varsayılan açık**; manuel derlemede `-Icons` ile.
+- 🎨 **Modern ikonlar** — Fluent UI System Icons + fonksiyonel renk, HiDPI keskinliğinde
+  (`@2x` multi-resolution). Manuel derlemede `-Icons` ile.
 - 📄 **`.udf` çift-tıkla aç** — kurulum dosya ilişkilendirmesini otomatik kaydeder.
+
+### Modern görünüm ve düzenleme (macOS portuyla birebir parite)
+
+[`ude-mac-arm64`](https://github.com/saidsurucu/ude-mac-arm64) portundaki tüm
+platform-bağımsız özellikler aktarıldı (Mac-spesifik düzeltmeler hariç):
+
+- 🖌️ **Modern düz görünüm (SKIN)** — düz Substance teması, düzleştirilmiş Flamingo şeridi,
+  Word-stili buton/sekme/combo/onay-kutusu/ipucu, nötr cetvel/kanvas. **Açık + koyu mod**
+  (Windows sistem temasından, `AppsUseLightTheme`). Şeritte **renk-modu seçici** (Açık/Koyu/
+  Sistem) + **canlı geçiş** (restart'sız) + koyu-belge onay kutusu. (`-Skin`; varsayılan kapalı.)
+- 📋 **Stilli yapıştırma** — Word/tarayıcı/PDF'den kalın/italik/liste/**tablo**/renk biçimiyle
+  yapışır (Windows panosu `CF_HTML`). Formatsız Yapıştır (Ctrl+Shift+V).
+- 🖼️ **Görseller** — satır-içi imaj tam çözünürlük (bulanıklık yok), fare köşe-tutamağıyla
+  boyutlandırma, panodan imajı kalitesini koruyarak yapıştırma.
+- ⌨️ **Düzenleme** — Backspace/Delete ile tablo silme, Otomatik Büyük Harf/Kelime Denetimi
+  anında etkin (restart'sız).
+- 📝 **Antetlerim** — kişisel antet bölümü (`%APPDATA%\UDE\Antetler`).
+- 📑 **Taze PDF** — "PDF Olarak Kaydet" canlı belgeden serialize eder ("önce Kaydet" gerekmez).
 
 ## Tek satırlık kurulum
 
@@ -54,12 +72,24 @@ Seçenekler:
 
 | Komut | Açıklama |
 |---|---|
-| `.\build.ps1` | Tam yapı (araç temini + indirme + paketleme) |
-| `.\build.ps1 -Icons` | Modern Material ikonlarla |
-| `.\build.ps1 -NoNativeDialogs` | Native dosya diyaloğunu kapat (Swing'de kal) |
+| `.\build.ps1` | Tam yapı (native diyalog + düzenleme özellikleri + paketleme) |
+| `.\build.ps1 -Icons` | Modern Fluent ikonlar (varsayılan kapalı) |
+| `.\build.ps1 -Skin` | Modern düz görünüm + açık/koyu + renk-modu seçici (varsayılan kapalı) |
+| `.\build.ps1 -Icons -Skin` | Tam modern görünüm (önerilen) |
 | `.\build.ps1 -Sign` | Üretilen EXE'yi `signtool` ile imzala |
 | `.\build.ps1 -Only package` | Sadece paketleme fazı (tekrar derleme) |
 | `$env:UDE_URL="..."; .\build.ps1` | Resmî paket linkini elle ver |
+
+**Varsayılan açık** düzenleme özellikleri (kapatmak için `-No…`): native diyalog
+(`-NoNativeDialogs`), tablo-silme (`-NoTableDelete`), canlı otomatik-düzeltme
+(`-NoLiveToggle`), stilli yapıştırma (`-NoPasteRich`), formatsız yapıştırma
+(`-NoPlainPaste`), panodan imaj (`-NoPasteImg`), satır-içi imaj tam-çöz (`-NoImgFull`),
+imaj boyutlandırma (`-NoImgResize`), antet (`-NoAntet`), taze PDF (`-NoPdfFresh`).
+Görsel **SKIN** ve **ICONS** opt-in'dir (`-Skin`/`-Icons`).
+
+> **NOT:** Çıktıyı dosyaya yönlendirmeyin (`>`, `2>&1`, `| Tee`). javac'in bilgi-amaçlı
+> "Note: deprecated API" satırı PowerShell 5.1'de yönlendirilince build'i durdurur. Düz
+> çalıştırın; normal kullanımda sorun yoktur.
 
 Çıktı: `dist\UyapDokumanEditoru-<sürüm>.exe`
 
@@ -71,20 +101,30 @@ kurulum dosyasına paketler:
 
 1. **deps** — Temurin JDK 17 (jpackage için) + JDK 11 (gömülü runtime için) + WiX Toolset 3.x indirilir.
 2. **download** — `uyap.gov.tr/Uyap-Editor` sayfasından resmî paket çekilir, `editor-app.jar` çıkarılır.
-3. **patch** — varsayılan olarak native dosya diyaloğu köprüsü (Javassist) uygulanır; `-Icons` verilirse modern ikonlar da eklenir. Mac portundaki diğer yamalara gerek yoktur (bkz. aşağıda).
+3. **patch** — native diyalog, modern görünüm ve düzenleme yamaları (Javassist) uygulanır
+   (bayraklarla; bkz. *Manuel derleme*). Her özellik build-zamanı `editor-app.jar`'ı yeniden
+   yazar; gömülen üçüncü-parti Java yoktur (Javassist yalnız build aracı).
 4. **package** — JDK 11'den `jlink` ile minimal runtime üretilir, `jpackage --type exe` ile `.exe` kurulum dosyası oluşturulur.
 
-### macOS portundan farklar
+### macOS portuyla parite
 
-macOS ARM64 portundaki ([`ude-mac-arm64`](https://github.com/saidsurucu/ude-mac-arm64))
-yamaların çoğu Windows'ta **gereksizdir**:
+[`ude-mac-arm64`](https://github.com/saidsurucu/ude-mac-arm64) portundaki **platform-bağımsız
+tüm özellikler aktarıldı.** Yalnızca aşağıdakiler Windows'ta **gereksiz / Mac-özgü** olduğu için
+atlandı:
 
-| macOS yaması | Windows'ta durum |
+| Özellik | Neden atlandı |
 |---|---|
-| sqlite-jdbc 3.7.2 → 3.46 | Gereksiz — jar zaten `native/Windows/amd64/sqlitejdbc.dll` içerir |
-| `com.apple.eawt` strip + eawt-shim | Gereksiz — jar kendi `com.apple.eawt` sınıflarını gömülü getirir; Windows JDK'da çakışma yok, Mac kod yolu tetiklenmez |
-| `PCSC.framework` path enjeksiyonu | Gereksiz — Windows yerleşik `winscard.dll` kullanır |
-| ⌘-tuş remap, trackpad zoom | Gereksiz — Mac'e özgü |
+| sqlite-jdbc 3.7.2 → 3.46 | jar zaten `native/Windows/amd64/sqlitejdbc.dll` içerir |
+| `com.apple.eawt` strip + eawt-shim | Windows JDK'da çakışma yok, Mac kod yolu tetiklenmez |
+| `PCSC.framework` enjeksiyonu | Windows yerleşik `winscard.dll` kullanır |
+| ⌘-remap, ⌥-option, trackpad zoom, dikte | Mac'e özgü girdi/donanım |
+| Trafik ışıkları, bütünleşik başlık çubuğu | Mac pencere kromu (Windows yerel başlık çubuğu) |
+| CARETFIX | macOS fractional-render imleç-binmesi (Windows 2px imleç sorunsuz) |
+| FOPFONTS | macOS Arial/Times eksikliği için; Windows ikisini de tam Türkçe glifle içerir |
+| TEXTREPLACE | macOS sistem Metin Değiştirme DB'sini okur (Windows karşılığı yok) |
+
+Mac'in native (Swift/Cocoa) parçaları Windows standart API'leriyle değiştirildi: pano HTML'i
+`DataFlavor.allHtmlFlavor` (CF_HTML), koyu-mod tespiti kayıt defteri `AppsUseLightTheme`.
 
 Keskin metnin anahtarı: resmî launcher'ın `-Dsun.java2d.dpiaware=false` / `uiScale=1`
 ayarları **bilerek atlanır**, böylece Java 11 yerel HiDPI ölçeklemesi devreye girer.
