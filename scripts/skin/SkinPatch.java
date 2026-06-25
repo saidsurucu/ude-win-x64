@@ -328,7 +328,25 @@ public class SkinPatch {
             System.out.println("[SkinPatch] UYARI: komut buton dolgusu atlandı: " + t);
         }
 
-        // (7c: koyu mod ikon aydınlatma — IconDarken/ModeAwareImage — bu fazda YOK.)
+        try {
+            CtClass utils = pool.get("tr.com.havelsan.uyap.system.editor.common.Utils");
+            utils.getMethod("b", "(Ljava/lang/String;)Ljavax/swing/ImageIcon;")
+                .insertAfter("{ $_ = macosskin.IconDarken.apply($_); }");
+            utils.getMethod("a", "(Ljava/lang/String;)Ljavax/swing/ImageIcon;")
+                .insertAfter("{ $_ = macosskin.IconDarken.apply($_); }");
+            utils.getMethod("a", "(Ljava/lang/String;I)Ljavax/swing/ImageIcon;")
+                .insertAfter("{ $_ = macosskin.IconDarken.apply($_); }");
+            utils.getMethod("a", "(Ljavax/swing/ImageIcon;II)Ljavax/swing/ImageIcon;")
+                .insertBefore(
+                    "{ if ($1 != null && $1.getImage() instanceof macosskin.ModeAwareImage) {"
+                  + "    javax.swing.ImageIcon __r = macosskin.IconDarken.scaleIcon($1, $2, $3);"
+                  + "    if (__r != null) return __r;"
+                  + "  } }");
+            writeClass(utils, outDir);
+            System.out.println("[SkinPatch] koyu mod ikon aydinlatma eklendi.");
+        } catch (Throwable t) {
+            System.out.println("[SkinPatch] UYARI: ikon aydinlatma atlandi: " + t);
+        }
 
         // Sekme alanı Word tarzı: Office-2007'nin tam-genişlik çizgisi ve seçili
         // sekme konturu kalkar (paintTaskArea no-op); seçili sekme, metin altında
