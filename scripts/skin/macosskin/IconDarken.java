@@ -59,17 +59,20 @@ public final class IconDarken {
             Image light = ((ModeAwareImage) img).lightImage();
             Image scaled;
             if (light instanceof BaseMultiResolutionImage) {
-                // Windows kesirli olcek (orn. 150%) keskinligi: EN YUKSEK kaynak
-                // varyanttan (genelde @2x) TEK bicubic olcekle; ust varyant olarak
-                // ham @2x korunur (AWT, cihaz boyutuna tek yuksek-kalite downscale
-                // yapar). Eski getScaledInstance(SCALE_SMOOTH) cift-olcek + bilinear
-                // upscale -> 1.5x'te bulanik/blokluydu.
+                // Windows kesirli olcek (orn. 150%) keskinligi: {w, 1.5w, 2w} uc
+                // varyanttan multi-res kur. Her hedef boyut icin kaynakta TAM o
+                // boyutta NATIVE varyant varsa (orn. @1.5x = 30px) onu kullan
+                // (vektorden uretildigi icin pixel-keskin); yoksa en yuksek
+                // kaynaktan TEK bicubic. Boylece olcekleme @1.5x asset'ini
+                // dusurmuyor -> %150'de exactVariant native 30px'i secip keskin cizer.
                 java.util.List<Image> vs =
                     ((BaseMultiResolutionImage) light).getResolutionVariants();
                 Image best = vs.get(vs.size() - 1);
-                Image lo = bicubic(best, w, h);
-                Image hi = (best.getWidth(null) >= w * 2) ? best : bicubic(best, w * 2, h * 2);
-                scaled = new BaseMultiResolutionImage(new Image[] { lo, hi });
+                int w15 = Math.round(w * 1.5f), h15 = Math.round(h * 1.5f);
+                Image lo  = nativeOr(vs, w,   h,   best);
+                Image mid = nativeOr(vs, w15, h15, best);
+                Image hi  = nativeOr(vs, w*2, h*2, best);
+                scaled = new BaseMultiResolutionImage(new Image[] { lo, mid, hi });
             } else {
                 scaled = bicubic(light, w, h);
             }
@@ -77,6 +80,15 @@ public final class IconDarken {
         } catch (Throwable t) {
             return null;
         }
+    }
+
+    /** Hedef (tw,th) boyutunda NATIVE kaynak varyanti varsa onu (pixel-keskin),
+     *  yoksa en yuksek kaynaktan (best) TEK bicubic olcekle. */
+    private static Image nativeOr(java.util.List<Image> vs, int tw, int th, Image best) {
+        for (Image v : vs) {
+            if (v.getWidth(null) == tw && v.getHeight(null) == th) return v;
+        }
+        return bicubic(best, tw, th);
     }
 
     /** Kaynagi (w,h)'ye TEK bicubic + yuksek-kalite render ile olcekler
