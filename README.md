@@ -47,22 +47,53 @@ açık** — kapatmak için ilgili `-No…` bayrağı (bkz. *Manuel derleme*):
 - 📝 **Antetlerim** — kişisel antet bölümü (`%APPDATA%\UDE\Antetler`).
 - 📑 **Taze PDF** — "PDF Olarak Kaydet" canlı belgeden serialize eder ("önce Kaydet" gerekmez).
 
-## Tek satırlık kurulum
+## 👩‍⚖️ Kolay kurulum — tek satır
 
-PowerShell'i açın ve şunu yapıştırın:
+Programcı olmanıza gerek yok. **PowerShell**'i açın: klavyede **Windows tuşu**'na basın,
+açılan arama kutusuna **PowerShell** yazın ve **Enter**'a basın. Açılan mavi (ya da siyah)
+pencereye aşağıdaki **tek satırı** kopyalayıp yapıştırın (pencerede **sağ tıklamak** =
+yapıştırır) ve **Enter**'a basın:
 
 ```powershell
 irm https://raw.githubusercontent.com/saidsurucu/ude-win-x64/main/kur.ps1 | iex
 ```
 
-Bu komut gerekli araçları (JDK 11/17 + WiX) ve resmî UDE paketini indirir, `.exe`
-kurulum dosyasını üretir ve kurulum sihirbazını başlatır. **Tüm özellikler — modern ikonlar,
-düz görünüm (açık/koyu), tüm düzenleme iyileştirmeleri — varsayılan açıktır.** Tek tek kapatmak
-için komuttan önce ilgili env'i verin (örn. `$env:SKIN='0'` ya da `$env:ICONS='0'`). İlk çalıştırma
-birkaç dakika sürer (~600 MB araç indirilir; hepsi depo altındaki `vendor/` içinde kalır, sistem geneline dokunmaz).
+Hepsi bu kadar. Manuel indirme, klasöre girme, Java kurma gibi adımlar **yok**. Bu komut
+gerisini sizin için yapar:
 
-> **SmartScreen:** Üretilen `.exe` imzasızdır. Uyarı çıkarsa **"Daha fazla bilgi" → "Yine de
-> çalıştır"** deyin. İsterseniz kendi sertifikanızla imzalamak için `-Sign` (bkz. aşağıda).
+- **Kaynak kodu** `C:\Users\<kullanıcı-adınız>\ude-win-x64` klasörüne indirir (zaten varsa
+  en güncel sürüme günceller).
+- Gereken **Java** sürümlerini ve araçları otomatik indirir — hepsi o klasörün altındaki
+  `vendor\` içinde kalır; **bilgisayarınıza sistem geneline hiçbir şey kurmaz**.
+- Uygulamayı **tüm modern özelliklerle** derler ve paketler: keskin metin (4K/HiDPI),
+  modern ikonlar, düz görünüm + **koyu mod**, native Aç/Kaydet pencereleri, e-imza ve tüm
+  düzenleme iyileştirmeleri (hepsi **varsayılan açık**).
+
+İlk derleme internet hızınıza göre birkaç dakika sürebilir.
+
+### Bittiğinde ne olur?
+
+Komut tamamlanınca `...\ude-win-x64\dist\` klasöründe bir **kurulum dosyası**
+(`UyapDokumanEditoru-5.4.17.exe`) oluşur ve betik onu **kendiliğinden açar** — karşınıza
+tanıdık bir **kurulum sihirbazı** gelir. Sihirbazda **İleri → İleri → Kur** deyip bitirin
+(isterseniz kurulacak klasörü seçebilirsiniz). Kurulum bitince UDE; **Başlat menüsü**nde ve
+**masaüstünde** kısayol olarak hazır olur. Artık herhangi bir **`.udf` dosyasına çift
+tıklayarak** da açabilirsiniz.
+
+> ⚠️ **"Windows bilgisayarınızı korudu" uyarısı çıkarsa** (SmartScreen): kurulum dosyası
+> imzasız olduğu için normaldir. Endişelenmeyin — küçük **"Daha fazla bilgi"** yazısına,
+> sonra çıkan **"Yine de çalıştır"** düğmesine tıklayın.
+
+**Yeni Editör sürümü çıktığında yukarıdaki tek satırı yeniden çalıştırmanız yeterli** — en
+güncel sürüm otomatik inip yeniden paketlenir.
+
+> 💼 **E-imza kullanacaksanız:** Akıllı kart e-imzası için ayrıca **AKİS Windows sürücüsünü**
+> kurun ([Kamu SM](https://www.kamusm.gov.tr)). Java tarafında ek ayar gerekmez; bkz.
+> *[E-imza notu](#e-imza-notu)*.
+
+> 🔧 Bir özelliği kapatmak isterseniz (örn. koyu/düz görünümü istemiyorsanız) tek satırdan
+> **önce** ilgili anahtarı verin: `$env:SKIN='0'` (düz görünüm kapalı) ya da `$env:ICONS='0'`
+> (orijinal ikonlar), sonra komutu çalıştırın.
 
 ## Manuel derleme
 
