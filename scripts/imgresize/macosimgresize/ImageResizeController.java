@@ -434,9 +434,12 @@ public final class ImageResizeController {
     /** System.err UDE'de yutulur (bilinen tuzak) — dosyaya logla. */
     private static void log(String msg) {
         if (!DEBUG) return;
-        try (PrintWriter w = new PrintWriter(new FileWriter(
-                System.getProperty("user.home") + "/Library/Logs/ude-imgresize.log", true))) {
-            w.println(new java.util.Date() + " " + msg);
+        try {
+            String b = System.getenv("LOCALAPPDATA");
+            if (b == null || b.isEmpty()) b = System.getProperty("java.io.tmpdir");
+            try (PrintWriter w = new PrintWriter(new FileWriter(b + "/ude-imgresize.log", true))) {
+                w.println(new java.util.Date() + " " + msg);
+            }
         } catch (Throwable ignored) {
         }
     }

@@ -16,8 +16,14 @@ import java.time.LocalDateTime;
 final class PrLog {
     private static final boolean ON = "1".equals(System.getenv("UDE_PASTERICHLOG"));
 
+    private static Path logDir() {
+        String b = System.getenv("LOCALAPPDATA");
+        if (b == null || b.isEmpty()) b = System.getProperty("java.io.tmpdir");
+        return Paths.get(b);
+    }
+
     private static Path file() {
-        return Paths.get(System.getProperty("user.home"), "Library", "Logs", "ude-pasterich.txt");
+        return logDir().resolve("ude-pasterich.txt");
     }
 
     static void log(String msg) {
@@ -46,7 +52,7 @@ final class PrLog {
     static void dumpHtml(String html) {
         if (!ON || html == null) return;
         try {
-            Path f = Paths.get(System.getProperty("user.home"), "Library", "Logs", "ude-pasterich-last.html");
+            Path f = logDir().resolve("ude-pasterich-last.html");
             Files.createDirectories(f.getParent());
             Files.write(f, html.getBytes("UTF-8"),
                     StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);

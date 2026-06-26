@@ -69,7 +69,10 @@ function Invoke-Patch {
     @{ env='IMGRESIZE'; name='IMGRESIZE'; script='imgresize\apply-imgresize.ps1' },
     @{ env='ANTET';     name='ANTET';     script='antet\apply-antet.ps1' },
     @{ env='PDFFRESH';  name='PDFFRESH';  script='pdffresh\apply-pdffresh.ps1' },
-    @{ env='PASTEIMG';  name='PASTEIMG';  script='pasteimg\apply-pasteimg.ps1' }
+    @{ env='PASTEIMG';  name='PASTEIMG';  script='pasteimg\apply-pasteimg.ps1' },
+    @{ env='FOPFONTS';  name='FOPFONTS';  script='fopfonts\apply-fopfonts.ps1' },
+    @{ env='CARETFIX';  name='CARETFIX';  script='caretfix\apply-caretfix.ps1' },
+    @{ env='ZOOMKEYS';  name='ZOOMKEYS';  script='zoomkeys\apply-zoomkeys.ps1' }
   )) {
     if ([Environment]::GetEnvironmentVariable($feat.env) -eq '0') {
       Write-Ok "$($feat.name) kapali ($($feat.env)=0)"
@@ -81,7 +84,6 @@ function Invoke-Patch {
   }
 
   # --- PASTERICH (harici stilli yapistirma) + PLAINPASTE (varsayilan ACIK, =0 kapatir) ---
-  # NOT: PASTEIMG port edilmedi - Mac'e ozgu (Windows'ta panodan imaj zaten BufferedImage doner, sorunsuz).
   if ($env:PASTERICH -eq '0') {
     Write-Ok "pasterich kapali (PASTERICH=0)"
   } else {
