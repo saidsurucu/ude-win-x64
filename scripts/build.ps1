@@ -2,12 +2,13 @@
 # Fazlar: deps -> download -> patch -> package
 #
 # Parametreler (env veya switch):
-#   -Icons      / $env:ICONS=1   modern ikonlari uygula
+#   TUM ozellikler varsayilan ACIK; -No<Ozellik> ile kapatilir (orn. -NoSkin, -NoIcons).
 #   -Sign       / $env:SIGN=1    EXE'yi signtool ile imzala
 #   -UdeUrl <u> / $env:UDE_URL   resmi paket linkini elle ver
 #   -Only <faz> sadece tek faz calistir (deps|download|patch|package)
 param(
   [switch]$Icons,
+  [switch]$NoIcons,
   [switch]$NoNativeDialogs,
   [switch]$NoLiveToggle,
   [switch]$NoTableDelete,
@@ -19,6 +20,7 @@ param(
   [switch]$NoPdfFresh,
   [switch]$NoPasteImg,
   [switch]$Skin,
+  [switch]$NoSkin,
   [switch]$Sign,
   [string]$UdeUrl,
   [ValidateSet('deps','download','patch','package','all')]
@@ -31,6 +33,7 @@ param(
 . "$PSScriptRoot\package.ps1"
 
 if ($Icons)           { $env:ICONS = '1' }
+if ($NoIcons)         { $env:ICONS = '0' }
 if ($NoNativeDialogs) { $env:NATIVE_DIALOGS = '0' }
 if ($NoLiveToggle)    { $env:LIVETOGGLE = '0' }
 if ($NoTableDelete)   { $env:TABLEDELETE = '0' }
@@ -42,6 +45,7 @@ if ($NoAntet)         { $env:ANTET = '0' }
 if ($NoPdfFresh)      { $env:PDFFRESH = '0' }
 if ($NoPasteImg)      { $env:PASTEIMG = '0' }
 if ($Skin)            { $env:SKIN = '1' }
+if ($NoSkin)          { $env:SKIN = '0' }
 if ($Sign)            { $env:SIGN  = '1' }
 if ($UdeUrl)          { $env:UDE_URL = $UdeUrl }
 

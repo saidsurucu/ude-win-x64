@@ -43,9 +43,9 @@ if ($haveGit -and (Test-Path (Join-Path $WorkDir '.git'))) {
 # --- 2) yapiyi calistir ---
 Say "yapi baslatiliyor (araclar + UDE indiriliyor; ilk sefer birkac dakika surebilir)"
 $build = Join-Path $WorkDir 'build.ps1'
-# Modern ikonlar varsayilan ACIK (devre disi: $env:ICONS='0')
-$icons = if ($env:ICONS -eq '0') { @() } else { @('-Icons') }
-powershell -NoProfile -ExecutionPolicy Bypass -File $build @icons
+# TUM ozellikler (ikonlar, modern gorunum, duzenleme) varsayilan ACIK.
+# Tek tek kapatmak icin once env verin, orn: $env:SKIN='0' veya $env:ICONS='0'
+powershell -NoProfile -ExecutionPolicy Bypass -File $build
 if ($LASTEXITCODE -ne 0) { throw "yapi basarisiz oldu (exit $LASTEXITCODE)" }
 
 # --- 3) installer'i baslat ---

@@ -55,8 +55,8 @@ function Invoke-Package {
     '--dest', $DistDir,
     '--temp', $tmp
   )
-  # SKIN=1: winlook agent (canli gecis + renk-modu picker). $APPDIR runtime'da app dizinine cozulur.
-  if ($env:SKIN -eq '1' -and (Test-Path (Join-Path $InputDir 'winlook.jar'))) {
+  # SKIN (varsayilan ACIK): winlook agent (canli gecis + renk-modu picker). $APPDIR runtime'da app dizinine cozulur.
+  if ($env:SKIN -ne '0' -and (Test-Path (Join-Path $InputDir 'winlook.jar'))) {
     $jpArgs += @('--java-options', '-javaagent:$APPDIR\winlook.jar')
     Write-Ok "winlook agent -javaagent olarak baglandi"
   }

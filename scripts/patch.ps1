@@ -15,17 +15,17 @@ function Invoke-Patch {
   $jar = Join-Path $InputDir $MainJar
   if (-not (Test-Path $jar)) { throw "editor-app.jar bulunamadi; once download calistirin" }
 
-  # --- modern ikonlar (opsiyonel, ICONS=1) ---
-  if ($env:ICONS -eq '1') {
+  # --- modern ikonlar (varsayilan ACIK, ICONS=0 kapatir) ---
+  if ($env:ICONS -ne '0') {
     $iconScript = Join-Path $PSScriptRoot 'icons\apply-icons.ps1'
     if (Test-Path $iconScript) {
-      Write-Ok "ICONS=1 -> modern ikonlar uygulaniyor"
+      Write-Ok "modern ikonlar uygulaniyor"
       & $iconScript -Jar $jar
     } else {
-      Write-Warn2 "ICONS=1 verildi ama icons\apply-icons.ps1 yok; atlaniyor"
+      Write-Warn2 "icons\apply-icons.ps1 yok; atlaniyor"
     }
   } else {
-    Write-Ok "ikon modernizasyonu kapali (etkinlestirmek icin ICONS=1)"
+    Write-Ok "ikon modernizasyonu kapali (ICONS=0)"
   }
 
   # --- native Windows dosya diyalogu (varsayilan ACIK, NATIVE_DIALOGS=0 ile kapanir) ---
@@ -93,15 +93,15 @@ function Invoke-Patch {
     } else { Write-Warn2 "pasterich\apply-pasterich.ps1 yok; atlaniyor" }
   }
 
-  # --- SKIN (spike; varsayilan KAPALI, SKIN=1 ile acilir) ---
-  if ($env:SKIN -eq '1') {
+  # --- SKIN (modern duz gorunum; varsayilan ACIK, SKIN=0 kapatir) ---
+  if ($env:SKIN -ne '0') {
     $skinScript = Join-Path $PSScriptRoot 'skin\apply-skin.ps1'
     if (Test-Path $skinScript) {
       Write-Ok "SKIN uygulaniyor"
       & $skinScript -Jar $jar
     } else { Write-Warn2 "skin\apply-skin.ps1 yok; atlaniyor" }
   } else {
-    Write-Ok "SKIN kapali (etkinlestirmek icin SKIN=1)"
+    Write-Ok "SKIN kapali (SKIN=0)"
   }
 
   Write-Ok "yama tamam"

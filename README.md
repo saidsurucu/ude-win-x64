@@ -25,18 +25,19 @@ Bu yapı şunları getirir:
 - 🎨 **Modern ikonlar** — Fluent UI System Icons + fonksiyonel renk, HiDPI keskinliğinde.
   Tam-kat ölçek için `@2x`, **kesirli ölçek (%125/150/175) için native `@1.5x` vektör seti**
   (`resvg` ile SVG'den üretilir; `scripts/icons/fluent/gen15x.py`) → cihaz boyutuna ölçeksiz,
-  pixel-tam render. Manuel derlemede `-Icons` ile.
+  pixel-tam render. **Varsayılan açık** (`-NoIcons` ile kapatılır).
 - 📄 **`.udf` çift-tıkla aç** — kurulum dosya ilişkilendirmesini otomatik kaydeder.
 
 ### Modern görünüm ve düzenleme (macOS portuyla birebir parite)
 
 [`ude-mac-arm64`](https://github.com/saidsurucu/ude-mac-arm64) portundaki tüm
-platform-bağımsız özellikler aktarıldı (Mac-spesifik düzeltmeler hariç):
+platform-bağımsız özellikler aktarıldı (Mac-spesifik düzeltmeler hariç). **Hepsi varsayılan
+açık** — kapatmak için ilgili `-No…` bayrağı (bkz. *Manuel derleme*):
 
 - 🖌️ **Modern düz görünüm (SKIN)** — düz Substance teması, düzleştirilmiş Flamingo şeridi,
   Word-stili buton/sekme/combo/onay-kutusu/ipucu, nötr cetvel/kanvas. **Açık + koyu mod**
   (Windows sistem temasından, `AppsUseLightTheme`). Şeritte **renk-modu seçici** (Açık/Koyu/
-  Sistem) + **canlı geçiş** (restart'sız) + koyu-belge onay kutusu. (`-Skin`; varsayılan kapalı.)
+  Sistem) + **canlı geçiş** (restart'sız) + koyu-belge onay kutusu. (`-NoSkin` ile kapatılır.)
 - 📋 **Stilli yapıştırma** — Word/tarayıcı/PDF'den kalın/italik/liste/**tablo**/renk biçimiyle
   yapışır (Windows panosu `CF_HTML`). Formatsız Yapıştır (Ctrl+Shift+V).
 - 🖼️ **Görseller** — satır-içi imaj tam çözünürlük (bulanıklık yok), fare köşe-tutamağıyla
@@ -55,9 +56,10 @@ irm https://raw.githubusercontent.com/saidsurucu/ude-win-x64/main/kur.ps1 | iex
 ```
 
 Bu komut gerekli araçları (JDK 11/17 + WiX) ve resmî UDE paketini indirir, `.exe`
-kurulum dosyasını üretir ve kurulum sihirbazını başlatır. **Modern ikonlar varsayılan olarak
-açıktır** (devre dışı bırakmak için komuttan önce `$env:ICONS='0'` verin). İlk çalıştırma birkaç
-dakika sürer (~600 MB araç indirilir; hepsi depo altındaki `vendor/` içinde kalır, sistem geneline dokunmaz).
+kurulum dosyasını üretir ve kurulum sihirbazını başlatır. **Tüm özellikler — modern ikonlar,
+düz görünüm (açık/koyu), tüm düzenleme iyileştirmeleri — varsayılan açıktır.** Tek tek kapatmak
+için komuttan önce ilgili env'i verin (örn. `$env:SKIN='0'` ya da `$env:ICONS='0'`). İlk çalıştırma
+birkaç dakika sürer (~600 MB araç indirilir; hepsi depo altındaki `vendor/` içinde kalır, sistem geneline dokunmaz).
 
 > **SmartScreen:** Üretilen `.exe` imzasızdır. Uyarı çıkarsa **"Daha fazla bilgi" → "Yine de
 > çalıştır"** deyin. İsterseniz kendi sertifikanızla imzalamak için `-Sign` (bkz. aşağıda).
@@ -70,24 +72,23 @@ cd ude-win-x64
 .\build.ps1                 # tam yapı -> dist\UyapDokumanEditoru-<sürüm>.exe
 ```
 
-Seçenekler:
+**`.\build.ps1` her özelliği açık derler.** Seçenekler:
 
 | Komut | Açıklama |
 |---|---|
-| `.\build.ps1` | Tam yapı (native diyalog + düzenleme özellikleri + paketleme) |
-| `.\build.ps1 -Icons` | Modern Fluent ikonlar (varsayılan kapalı) |
-| `.\build.ps1 -Skin` | Modern düz görünüm + açık/koyu + renk-modu seçici (varsayılan kapalı) |
-| `.\build.ps1 -Icons -Skin` | Tam modern görünüm (önerilen) |
+| `.\build.ps1` | **Tam yapı — tüm özellikler açık** (önerilen) |
+| `.\build.ps1 -NoSkin` | Modern düz görünümü kapat (sade Substance) |
+| `.\build.ps1 -NoIcons` | Modern Fluent ikonları kapat (orijinal ikonlar) |
 | `.\build.ps1 -Sign` | Üretilen EXE'yi `signtool` ile imzala |
 | `.\build.ps1 -Only package` | Sadece paketleme fazı (tekrar derleme) |
 | `$env:UDE_URL="..."; .\build.ps1` | Resmî paket linkini elle ver |
 
-**Varsayılan açık** düzenleme özellikleri (kapatmak için `-No…`): native diyalog
-(`-NoNativeDialogs`), tablo-silme (`-NoTableDelete`), canlı otomatik-düzeltme
-(`-NoLiveToggle`), stilli yapıştırma (`-NoPasteRich`), formatsız yapıştırma
-(`-NoPlainPaste`), panodan imaj (`-NoPasteImg`), satır-içi imaj tam-çöz (`-NoImgFull`),
-imaj boyutlandırma (`-NoImgResize`), antet (`-NoAntet`), taze PDF (`-NoPdfFresh`).
-Görsel **SKIN** ve **ICONS** opt-in'dir (`-Skin`/`-Icons`).
+**Tüm özellikler varsayılan açık** — tek tek kapatmak için ilgili bayrak: modern görünüm
+(`-NoSkin`), modern ikonlar (`-NoIcons`), native diyalog (`-NoNativeDialogs`), tablo-silme
+(`-NoTableDelete`), canlı otomatik-düzeltme (`-NoLiveToggle`), stilli yapıştırma
+(`-NoPasteRich`), formatsız yapıştırma (`-NoPlainPaste`), panodan imaj (`-NoPasteImg`),
+satır-içi imaj tam-çöz (`-NoImgFull`), imaj boyutlandırma (`-NoImgResize`), antet
+(`-NoAntet`), taze PDF (`-NoPdfFresh`).
 
 > **NOT:** Çıktıyı dosyaya yönlendirmeyin (`>`, `2>&1`, `| Tee`). javac'in bilgi-amaçlı
 > "Note: deprecated API" satırı PowerShell 5.1'de yönlendirilince build'i durdurur. Düz
