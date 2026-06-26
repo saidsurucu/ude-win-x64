@@ -60,16 +60,21 @@ public class NativeDialogPatch {
             final boolean[] hit = { false };
             cc.instrument(new ExprEditor() {
                 public void edit(MethodCall m) throws javassist.CannotCompileException {
-                    if (!m.getClassName().equals("javax.swing.JFileChooser")) return;
+                    // Eslestirme metot ADI + IMZAsina gore (className'e DEGIL): UDE cagriyi
+                    // bir com.alee WebFileChooser (JFileChooser alt sinifi) uzerinden yaparsa
+                    // getClassName() alt sinif adini doner ve sinif-bazli eslesme kacar.
+                    // Bu imzalar JFileChooser'a ozgudur; $0 -> JFileChooser cast tip-guvenli
+                    // (WebFileChooser de JFileChooser'a atanabilir).
                     String mn = m.getMethodName();
-                    if (mn.equals("showOpenDialog")) {
-                        m.replace("$_ = com.udewin.nativedialog.NativeFileDialogBridge.show($0, $1, 0);");
+                    String sig = m.getSignature();
+                    if (mn.equals("showOpenDialog") && sig.equals("(Ljava/awt/Component;)I")) {
+                        m.replace("$_ = com.udewin.nativedialog.NativeFileDialogBridge.show((javax.swing.JFileChooser)$0, $1, 0);");
                         hit[0] = true;
-                    } else if (mn.equals("showSaveDialog")) {
-                        m.replace("$_ = com.udewin.nativedialog.NativeFileDialogBridge.show($0, $1, 1);");
+                    } else if (mn.equals("showSaveDialog") && sig.equals("(Ljava/awt/Component;)I")) {
+                        m.replace("$_ = com.udewin.nativedialog.NativeFileDialogBridge.show((javax.swing.JFileChooser)$0, $1, 1);");
                         hit[0] = true;
-                    } else if (mn.equals("showDialog")) {
-                        m.replace("$_ = com.udewin.nativedialog.NativeFileDialogBridge.show($0, $1, 2);");
+                    } else if (mn.equals("showDialog") && sig.equals("(Ljava/awt/Component;Ljava/lang/String;)I")) {
+                        m.replace("$_ = com.udewin.nativedialog.NativeFileDialogBridge.show((javax.swing.JFileChooser)$0, $1, 2);");
                         hit[0] = true;
                     }
                 }
