@@ -22,6 +22,7 @@ param(
   [switch]$NoFopFonts,
   [switch]$NoCaretFix,
   [switch]$NoZoomKeys,
+  [switch]$NoFileAssoc,
   [switch]$Skin,
   [switch]$NoSkin,
   [switch]$Sign,
@@ -50,6 +51,7 @@ if ($NoPasteImg)      { $env:PASTEIMG = '0' }
 if ($NoFopFonts)      { $env:FOPFONTS = '0' }
 if ($NoCaretFix)      { $env:CARETFIX = '0' }
 if ($NoZoomKeys)      { $env:ZOOMKEYS = '0' }
+if ($NoFileAssoc)     { $env:FILEASSOC = '0' }
 if ($Skin)            { $env:SKIN = '1' }
 if ($NoSkin)          { $env:SKIN = '0' }
 if ($Sign)            { $env:SIGN  = '1' }

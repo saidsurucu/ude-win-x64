@@ -35,7 +35,12 @@ public class NativeDialogPatch {
         pool.insertClassPath(jar);
         pool.insertClassPath(bridgeDir); // NativeFileDialogBridge cozulebilsin
 
-        // Aday siniflari hizli (byte) tarama ile bul: hem JFileChooser hem show* gecen tr/* siniflari
+        // Aday siniflari hizli (byte) tarama ile bul: show* string'i gecen tr/* siniflari.
+        // ESKI ON-FILTRE "JFileChooser literal'i ICERMELI" idi; ama UDE Ac/Kaydet'i kendi alt
+        // sinifi gui.dp (-> gui.a.p -> javax.swing.JFileChooser) uzerinden cagiriyor. dp uzerinden
+        // cagiran siniflar bytecode'unda "JFileChooser" literal'i tasimaz -> atlanirdi (Ac diyalogu
+        // Swing kalirdi). Literal sartini kaldirdik; gercek guvenligi asagidaki matcher saglar
+        // (ad + imza + declaring-class JFileChooser ALT-TIP kontrolu -> cast tip-guvenli).
         List<String> targets = new ArrayList<String>();
         ZipFile zf = new ZipFile(jar);
         try {
@@ -45,8 +50,7 @@ public class NativeDialogPatch {
                 String n = ze.getName();
                 if (!n.startsWith("tr/") || !n.endsWith(".class")) continue;
                 String s = new String(readAll(zf.getInputStream(ze)), StandardCharsets.ISO_8859_1);
-                if (s.contains("JFileChooser")
-                        && (s.contains("showOpenDialog") || s.contains("showSaveDialog") || s.contains("showDialog"))) {
+                if (s.contains("showOpenDialog") || s.contains("showSaveDialog") || s.contains("showDialog")) {
                     targets.add(n.substring(0, n.length() - 6).replace('/', '.'));
                 }
             }
@@ -54,39 +58,48 @@ public class NativeDialogPatch {
             zf.close();
         }
 
+        final CtClass jfc = pool.get("javax.swing.JFileChooser");
         int patched = 0;
+        int skipped = 0;
         for (String cn : targets) {
-            CtClass cc = pool.get(cn);
-            final boolean[] hit = { false };
-            cc.instrument(new ExprEditor() {
-                public void edit(MethodCall m) throws javassist.CannotCompileException {
-                    // Eslestirme metot ADI + IMZAsina gore (className'e DEGIL): UDE cagriyi
-                    // bir com.alee WebFileChooser (JFileChooser alt sinifi) uzerinden yaparsa
-                    // getClassName() alt sinif adini doner ve sinif-bazli eslesme kacar.
-                    // Bu imzalar JFileChooser'a ozgudur; $0 -> JFileChooser cast tip-guvenli
-                    // (WebFileChooser de JFileChooser'a atanabilir).
-                    String mn = m.getMethodName();
-                    String sig = m.getSignature();
-                    if (mn.equals("showOpenDialog") && sig.equals("(Ljava/awt/Component;)I")) {
-                        m.replace("$_ = com.udewin.nativedialog.NativeFileDialogBridge.show((javax.swing.JFileChooser)$0, $1, 0);");
-                        hit[0] = true;
-                    } else if (mn.equals("showSaveDialog") && sig.equals("(Ljava/awt/Component;)I")) {
-                        m.replace("$_ = com.udewin.nativedialog.NativeFileDialogBridge.show((javax.swing.JFileChooser)$0, $1, 1);");
-                        hit[0] = true;
-                    } else if (mn.equals("showDialog") && sig.equals("(Ljava/awt/Component;Ljava/lang/String;)I")) {
-                        m.replace("$_ = com.udewin.nativedialog.NativeFileDialogBridge.show((javax.swing.JFileChooser)$0, $1, 2);");
+            try {
+                CtClass cc = pool.get(cn);
+                final boolean[] hit = { false };
+                cc.instrument(new ExprEditor() {
+                    public void edit(MethodCall m) throws javassist.CannotCompileException {
+                        // Eslestirme metot ADI + IMZAsina + DECLARING-CLASS alt-tip kontrolune gore.
+                        // Imzalar JFileChooser.show*'a ozgu; dahasi cagrinin sahibi gercekten
+                        // JFileChooser alt sinifi mi diye dogruluyoruz -> $0 -> JFileChooser cast
+                        // tip-guvenli (gui.a.p extends javax.swing.JFileChooser; WebFileChooser da
+                        // alt sinif). Alt-tip degilse atla (runtime ClassCast'i onler).
+                        String mn = m.getMethodName();
+                        String sig = m.getSignature();
+                        int mode;
+                        if (mn.equals("showOpenDialog") && sig.equals("(Ljava/awt/Component;)I")) mode = 0;
+                        else if (mn.equals("showSaveDialog") && sig.equals("(Ljava/awt/Component;)I")) mode = 1;
+                        else if (mn.equals("showDialog") && sig.equals("(Ljava/awt/Component;Ljava/lang/String;)I")) mode = 2;
+                        else return;
+                        try {
+                            if (!m.getMethod().getDeclaringClass().subtypeOf(jfc)) return;
+                        } catch (Throwable t) {
+                            return; // metot/sinif cozulemedi -> guvenli tarafta kal
+                        }
+                        m.replace("$_ = com.udewin.nativedialog.NativeFileDialogBridge.show((javax.swing.JFileChooser)$0, $1, " + mode + ");");
                         hit[0] = true;
                     }
+                });
+                if (hit[0]) {
+                    writeClass(cc, outDir);
+                    patched++;
+                    System.out.println("[NativeDialogPatch] yamalandi: " + cn);
                 }
-            });
-            if (hit[0]) {
-                writeClass(cc, outDir);
-                patched++;
-                System.out.println("[NativeDialogPatch] yamalandi: " + cn);
+                cc.detach();
+            } catch (Throwable t) {
+                skipped++;
+                System.out.println("[NativeDialogPatch] atlandi (hata): " + cn + " -> " + t);
             }
-            cc.detach();
         }
-        System.out.println("[NativeDialogPatch] toplam " + patched + " sinif yamalandi.");
+        System.out.println("[NativeDialogPatch] toplam " + patched + " sinif yamalandi (" + skipped + " hata ile atlandi).");
         if (patched == 0) throw new RuntimeException("hicbir JFileChooser cagrisi yamalanmadi");
     }
 

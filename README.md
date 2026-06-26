@@ -26,7 +26,8 @@ Bu yapı şunları getirir:
   Tam-kat ölçek için `@2x`, **kesirli ölçek (%125/150/175) için native `@1.5x` vektör seti**
   (`resvg` ile SVG'den üretilir; `scripts/icons/fluent/gen15x.py`) → cihaz boyutuna ölçeksiz,
   pixel-tam render. **Varsayılan açık** (`-NoIcons` ile kapatılır).
-- 📄 **`.udf` çift-tıkla aç** — kurulum dosya ilişkilendirmesini otomatik kaydeder.
+- 📄 **`.udf` çift-tıkla aç** — kurulum dosya ilişkilendirmesini otomatik kaydeder; çift
+  tıklanan belge doğrudan editörde açılır. **Varsayılan açık** (`-NoFileAssoc` ile kapatılır).
 
 ### Modern görünüm ve düzenleme (macOS portuyla birebir parite)
 

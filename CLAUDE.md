@@ -40,7 +40,8 @@ bir `foreach` döngüsü (default-on, `$env:X -ne '0'`) veya ayrı bloklarla yö
 | Bayrak | Ne | Obfuscated hedefler |
 |---|---|---|
 | ICONS | Fluent ikonlar + HiDPI (1x/@1.5x/@2x multi-res) | `Utils.b`, `Utils.a`, Flamingo `ImageWrapperIcon`/`FilteredResizableIcon.paintIcon` |
-| NATIVE_DIALOGS | Win32 Aç/Kaydet (`java.awt.FileDialog`) | `tr/*` JFileChooser `show*` (metot+imza eşleşmesi → WebFileChooser alt-sınıfı da) |
+| NATIVE_DIALOGS | Win32 Aç/Kaydet (`java.awt.FileDialog`) | `tr/*` `show*` çağrıları; matcher = **ad+imza+declaring-class JFileChooser alt-tip** (sınıf-bağımsız). UDE diyalogları `gui.dp`→`gui.a.p`→`JFileChooser` üzerinden; tarama "JFileChooser literal" şartı YOK (yoksa `fm/iI/nn/op` Aç çağıranları atlanırdı) |
+| **FILEASSOC** | .udf çift-tık açma | `WPAppManager.main`'e `$1=ArgFix.normalize($1)` inject; kontrol-jetonu yoksa (yalnız dosya yolu) başa `getNewWPInstance` ekle (yoksa `a(String[])` erken `return` ediyor) |
 | LIVETOGGLE | Otomatik-düzeltme anında etkin | `...pki.b.l` reflection |
 | TABLEDELETE | Backspace/Delete tablo sil | `WPAppManager.main` inject; `DocumentEx` **void f(int)** overload |
 | IMGFULL | Satır-içi imaj tam-çöz | `editor.utils.h`, `swing.wp.b.at.drawImage` (bicubic) |

@@ -19,6 +19,7 @@ param(
   [switch]$NoFopFonts,
   [switch]$NoCaretFix,
   [switch]$NoZoomKeys,
+  [switch]$NoFileAssoc,
   [switch]$Skin,
   [switch]$NoSkin,
   [switch]$Sign,
