@@ -16,6 +16,7 @@ param(
   [switch]$NoAntet,
   [switch]$NoPdfFresh,
   [switch]$NoPasteImg,
+  [switch]$NoFopFonts,
   [switch]$Skin,
   [switch]$NoSkin,
   [switch]$Sign,
