@@ -83,7 +83,6 @@ function Invoke-Patch {
   }
 
   # --- PASTERICH (harici stilli yapistirma) + PLAINPASTE (varsayilan ACIK, =0 kapatir) ---
-  # NOT: PASTEIMG port edilmedi - Mac'e ozgu (Windows'ta panodan imaj zaten BufferedImage doner, sorunsuz).
   if ($env:PASTERICH -eq '0') {
     Write-Ok "pasterich kapali (PASTERICH=0)"
   } else {

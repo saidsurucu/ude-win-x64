@@ -175,8 +175,9 @@ public final class PlainPaste {
     }
     private static void write(String s) {
         try {
-            java.io.File f = new java.io.File(System.getProperty("user.home"),
-                    "Library/Logs/ude-plainpaste.txt");
+            String b = System.getenv("LOCALAPPDATA");
+            if (b == null || b.isEmpty()) b = System.getProperty("java.io.tmpdir");
+            java.io.File f = new java.io.File(b, "ude-plainpaste.txt");
             try (java.io.FileWriter w = new java.io.FileWriter(f, true)) {
                 w.write(s + "\n");
             }
