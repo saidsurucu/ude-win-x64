@@ -46,6 +46,10 @@ açık** — kapatmak için ilgili `-No…` bayrağı (bkz. *Manuel derleme*):
   anında etkin (restart'sız).
 - 📝 **Antetlerim** — kişisel antet bölümü (`%APPDATA%\UDE\Antetler`).
 - 📑 **Taze PDF** — "PDF Olarak Kaydet" canlı belgeden serialize eder ("önce Kaydet" gerekmez).
+- 🔤 **PDF'te Türkçe harfler** — "PDF Olarak Kaydet" çıktısında `ğ Ğ ş Ş ı İ` artık doğru çıkar
+  (gömülü tam-Unicode font; eski FOP base-14/Cp1252 bu harfleri düşürüyordu — platform-bağımsız hata).
+- 🔍 **Klavye/zoom** — `Ctrl +` / `Ctrl −` ile yakınlaştır/uzaklaştır; %100 dışı zoomda imleç ve
+  tıklama hizası düzeltildi. Kaydet'te çoklu-format (UDF/RTF/PDF…) seçim penceresi.
 
 ## 👩‍⚖️ Kolay kurulum — tek satır
 
@@ -119,7 +123,8 @@ cd ude-win-x64
 (`-NoTableDelete`), canlı otomatik-düzeltme (`-NoLiveToggle`), stilli yapıştırma
 (`-NoPasteRich`), formatsız yapıştırma (`-NoPlainPaste`), panodan imaj (`-NoPasteImg`),
 satır-içi imaj tam-çöz (`-NoImgFull`), imaj boyutlandırma (`-NoImgResize`), antet
-(`-NoAntet`), taze PDF (`-NoPdfFresh`).
+(`-NoAntet`), taze PDF (`-NoPdfFresh`), PDF'te Türkçe harf (`-NoFopFonts`), zoom imleç
+hizası (`-NoCaretFix`), Ctrl+/Ctrl− klavye zoom (`-NoZoomKeys`).
 
 > **NOT:** Çıktıyı dosyaya yönlendirmeyin (`>`, `2>&1`, `| Tee`). javac'in bilgi-amaçlı
 > "Note: deprecated API" satırı PowerShell 5.1'de yönlendirilince build'i durdurur. Düz
@@ -151,10 +156,9 @@ atlandı:
 | sqlite-jdbc 3.7.2 → 3.46 | jar zaten `native/Windows/amd64/sqlitejdbc.dll` içerir |
 | `com.apple.eawt` strip + eawt-shim | Windows JDK'da çakışma yok, Mac kod yolu tetiklenmez |
 | `PCSC.framework` enjeksiyonu | Windows yerleşik `winscard.dll` kullanır |
-| ⌘-remap, ⌥-option, trackpad zoom, dikte | Mac'e özgü girdi/donanım |
+| ⌘-remap, ⌥-option, trackpad zoom jesti, dikte | Mac'e özgü girdi/donanım (Ctrl+/Ctrl− klavye zoom **port edildi**) |
 | Trafik ışıkları, bütünleşik başlık çubuğu | Mac pencere kromu (Windows yerel başlık çubuğu) |
-| CARETFIX | macOS fractional-render imleç-binmesi (Windows 2px imleç sorunsuz) |
-| FOPFONTS | macOS Arial/Times eksikliği için; Windows ikisini de tam Türkçe glifle içerir |
+| CARETFIX Faz-1 (1px imleç) | macOS fractional-render imleç-binmesi kozmetiği (Windows 2px sorunsuz). Faz-2 zoom düzeltmesi **port edildi** |
 | TEXTREPLACE | macOS sistem Metin Değiştirme DB'sini okur (Windows karşılığı yok) |
 
 Mac'in native (Swift/Cocoa) parçaları Windows standart API'leriyle değiştirildi: pano HTML'i
