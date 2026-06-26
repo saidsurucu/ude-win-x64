@@ -71,7 +71,8 @@ function Invoke-Patch {
     @{ env='PDFFRESH';  name='PDFFRESH';  script='pdffresh\apply-pdffresh.ps1' },
     @{ env='PASTEIMG';  name='PASTEIMG';  script='pasteimg\apply-pasteimg.ps1' },
     @{ env='FOPFONTS';  name='FOPFONTS';  script='fopfonts\apply-fopfonts.ps1' },
-    @{ env='CARETFIX';  name='CARETFIX';  script='caretfix\apply-caretfix.ps1' }
+    @{ env='CARETFIX';  name='CARETFIX';  script='caretfix\apply-caretfix.ps1' },
+    @{ env='ZOOMKEYS';  name='ZOOMKEYS';  script='zoomkeys\apply-zoomkeys.ps1' }
   )) {
     if ([Environment]::GetEnvironmentVariable($feat.env) -eq '0') {
       Write-Ok "$($feat.name) kapali ($($feat.env)=0)"
