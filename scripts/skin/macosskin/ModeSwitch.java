@@ -66,10 +66,50 @@ public final class ModeSwitch {
                     DarkMode.trace("modeswitch repaint: " + pt);
                 }
             }
+            // Tema değişimi (setSkin + updateUI) klavye odağını editörden alıp
+            // ribbon/konteyner bileşenine taşıyor → kullanıcı metne tıklayana dek
+            // yazamıyor/kısayolları kullanamıyor. Odağı aktif pencerenin editörüne
+            // geri ver. invokeLater: combo'nun kendi (asenkron) odak transferi
+            // bittikten SONRA çalışsın, yoksa bizim requestFocus'u ezer.
+            SwingUtilities.invokeLater(ModeSwitch::restoreEditorFocus);
             DarkMode.trace("modeswitch uygulandı: " + mode + " dark=" + dark);
         } catch (Throwable t) {
             DarkMode.trace("modeswitch HATA: " + t);
         }
+    }
+
+    /** Aktif pencerenin editörüne (text.hj türevi) odağı geri ver. Odak zaten
+     *  bir metin alanındaysa (editör ya da arama kutusu) dokunma — yalnız tema
+     *  değişiminin editör-dışı konteynere kaçırdığı odağı toparlar. */
+    private static void restoreEditorFocus() {
+        try {
+            java.awt.KeyboardFocusManager kfm =
+                java.awt.KeyboardFocusManager.getCurrentKeyboardFocusManager();
+            Component fo = kfm.getFocusOwner();
+            if (fo instanceof javax.swing.text.JTextComponent) return;
+            Window aw = kfm.getActiveWindow();
+            if (aw == null) return;
+            Component ed = findEditor(aw);
+            if (ed != null) {
+                boolean ok = ed.requestFocusInWindow();
+                DarkMode.trace("modeswitch odak editöre verildi: " + ok);
+            }
+        } catch (Throwable t) {
+            DarkMode.trace("modeswitch odak: " + t);
+        }
+    }
+
+    private static Component findEditor(Component c) {
+        if (c instanceof tr.com.havelsan.uyap.system.editor.common.text.hj) {
+            return c;
+        }
+        if (c instanceof Container) {
+            for (Component k : ((Container) c).getComponents()) {
+                Component r = findEditor(k);
+                if (r != null) return r;
+            }
+        }
+        return null;
     }
 
     /** UI delegate'i OLMAYAN konteynerler (JRootPane/JLayeredPane; updateUI
