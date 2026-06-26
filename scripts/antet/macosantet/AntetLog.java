@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 
-/* Teşhis logu: UDE_ANTETLOG=1 iken %LOCALAPPDATA%\ude-antet.txt.
+/* Teşhis logu: UDE_ANTETLOG=1 iken %LOCALAPPDATA%/ude-antet.txt.
  * System.err'i uygulama yuttuğu için dosyaya yazılır (TrLog deseni). */
 public final class AntetLog {
 
