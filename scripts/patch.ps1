@@ -70,7 +70,8 @@ function Invoke-Patch {
     @{ env='ANTET';     name='ANTET';     script='antet\apply-antet.ps1' },
     @{ env='PDFFRESH';  name='PDFFRESH';  script='pdffresh\apply-pdffresh.ps1' },
     @{ env='PASTEIMG';  name='PASTEIMG';  script='pasteimg\apply-pasteimg.ps1' },
-    @{ env='FOPFONTS';  name='FOPFONTS';  script='fopfonts\apply-fopfonts.ps1' }
+    @{ env='FOPFONTS';  name='FOPFONTS';  script='fopfonts\apply-fopfonts.ps1' },
+    @{ env='CARETFIX';  name='CARETFIX';  script='caretfix\apply-caretfix.ps1' }
   )) {
     if ([Environment]::GetEnvironmentVariable($feat.env) -eq '0') {
       Write-Ok "$($feat.name) kapali ($($feat.env)=0)"
