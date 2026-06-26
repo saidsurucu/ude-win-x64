@@ -9,6 +9,10 @@
 # kazara kalan bos klon
 /temp_clone/
 
+# ikon ureticisi dev-artifaktlari (yeniden uretilebilir)
+scripts/icons/fluent/__pycache__/
+scripts/icons/fluent/cache/
+
 # editor
 *.swp
 .DS_Store
