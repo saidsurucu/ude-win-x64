@@ -59,19 +59,53 @@ public final class IconDarken {
             Image light = ((ModeAwareImage) img).lightImage();
             Image scaled;
             if (light instanceof BaseMultiResolutionImage) {
-                BaseMultiResolutionImage mr = (BaseMultiResolutionImage) light;
-                Image lo = mr.getResolutionVariant(w, h)
-                    .getScaledInstance(w, h, Image.SCALE_SMOOTH);
-                Image hi = mr.getResolutionVariant(w * 2, h * 2)
-                    .getScaledInstance(w * 2, h * 2, Image.SCALE_SMOOTH);
-                scaled = new BaseMultiResolutionImage(new Image[] { lo, hi });
+                // Windows kesirli olcek (orn. 150%) keskinligi: {w, 1.5w, 2w} uc
+                // varyanttan multi-res kur. Her hedef boyut icin kaynakta TAM o
+                // boyutta NATIVE varyant varsa (orn. @1.5x = 30px) onu kullan
+                // (vektorden uretildigi icin pixel-keskin); yoksa en yuksek
+                // kaynaktan TEK bicubic. Boylece olcekleme @1.5x asset'ini
+                // dusurmuyor -> %150'de exactVariant native 30px'i secip keskin cizer.
+                java.util.List<Image> vs =
+                    ((BaseMultiResolutionImage) light).getResolutionVariants();
+                Image best = vs.get(vs.size() - 1);
+                int w15 = Math.round(w * 1.5f), h15 = Math.round(h * 1.5f);
+                Image lo  = nativeOr(vs, w,   h,   best);
+                Image mid = nativeOr(vs, w15, h15, best);
+                Image hi  = nativeOr(vs, w*2, h*2, best);
+                scaled = new BaseMultiResolutionImage(new Image[] { lo, mid, hi });
             } else {
-                scaled = light.getScaledInstance(w, h, Image.SCALE_SMOOTH);
+                scaled = bicubic(light, w, h);
             }
             return new javax.swing.ImageIcon(new ModeAwareImage(scaled));
         } catch (Throwable t) {
             return null;
         }
+    }
+
+    /** Hedef (tw,th) boyutunda NATIVE kaynak varyanti varsa onu (pixel-keskin),
+     *  yoksa en yuksek kaynaktan (best) TEK bicubic olcekle. */
+    private static Image nativeOr(java.util.List<Image> vs, int tw, int th, Image best) {
+        for (Image v : vs) {
+            if (v.getWidth(null) == tw && v.getHeight(null) == th) return v;
+        }
+        return bicubic(best, tw, th);
+    }
+
+    /** Kaynagi (w,h)'ye TEK bicubic + yuksek-kalite render ile olcekler
+     *  (Windows kesirli-olcek keskinligi). */
+    static Image bicubic(Image src, int w, int h) {
+        if (w <= 0 || h <= 0) return src;
+        BufferedImage bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        java.awt.Graphics2D g = bi.createGraphics();
+        g.setRenderingHint(java.awt.RenderingHints.KEY_INTERPOLATION,
+            java.awt.RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        g.setRenderingHint(java.awt.RenderingHints.KEY_RENDERING,
+            java.awt.RenderingHints.VALUE_RENDER_QUALITY);
+        g.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING,
+            java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
+        g.drawImage(src, 0, 0, w, h, null);
+        g.dispose();
+        return bi;
     }
 
     private static Image lighten(Image src) {
