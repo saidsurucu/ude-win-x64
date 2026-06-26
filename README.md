@@ -22,8 +22,10 @@ Bu yapı şunları getirir:
 - 📂 **Native Windows aç/kaydet diyaloğu** — arkaik Swing `JFileChooser` yerine gerçek Win32
   diyaloğu (`java.awt.FileDialog`). **Varsayılan açık** (`$env:NATIVE_DIALOGS='0'` ile kapatılır;
   klasör-seçme gereken yerlerde otomatik Swing'e geri düşer).
-- 🎨 **Modern ikonlar** — Fluent UI System Icons + fonksiyonel renk, HiDPI keskinliğinde
-  (`@2x` multi-resolution). Manuel derlemede `-Icons` ile.
+- 🎨 **Modern ikonlar** — Fluent UI System Icons + fonksiyonel renk, HiDPI keskinliğinde.
+  Tam-kat ölçek için `@2x`, **kesirli ölçek (%125/150/175) için native `@1.5x` vektör seti**
+  (`resvg` ile SVG'den üretilir; `scripts/icons/fluent/gen15x.py`) → cihaz boyutuna ölçeksiz,
+  pixel-tam render. Manuel derlemede `-Icons` ile.
 - 📄 **`.udf` çift-tıkla aç** — kurulum dosya ilişkilendirmesini otomatik kaydeder.
 
 ### Modern görünüm ve düzenleme (macOS portuyla birebir parite)
