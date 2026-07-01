@@ -75,7 +75,7 @@ public final class PlainPaste {
      * kit giriş öznitelikleri (yazım stili). Böylece FontFamily HER ZAMAN tanımlı
      * (Swing'in "Monospaced"a düşmesi engellenir).
      */
-    private static AttributeSet cursorAttrs(JTextComponent editor) {
+    static AttributeSet cursorAttrs(JTextComponent editor) {   /* paket-içi: PasteMode da kullanır */
         SimpleAttributeSet a = new SimpleAttributeSet();
         StyleConstants.setFontFamily(a, "Times New Roman");
         StyleConstants.setFontSize(a, 12);
