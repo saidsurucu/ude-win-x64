@@ -89,7 +89,7 @@ public class PasteRichPatch {
         // Idempotans: cagri zaten varsa atla (ZOOMKEYS/FILEASSOC ayni metoda dokunur;
         // her patcher jar'i taze okur -> insertBefore'lar kompoze olur).
         CtClass wp = pool.get("tr.com.havelsan.uyap.system.editor.common.WPAppManager");
-        CtMethod mainM = wp.getDeclaredMethod("main");
+        CtMethod mainM = wp.getMethod("main", "([Ljava/lang/String;)V");
         final boolean[] already = { false };
         mainM.instrument(new ExprEditor() {
             public void edit(MethodCall mc) {
