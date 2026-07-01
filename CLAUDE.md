@@ -63,6 +63,9 @@ verbatim çalışır. Hedefleri yamadan önce `javap`/`jar tf` ile DOĞRULA.
 - **Koyu mod tespiti**: kayıt defteri `HKCU\...\Themes\Personalize\AppsUseLightTheme`
   (Mac `defaults read` yerine). `macosskin/DarkMode.java`.
 - **Pano HTML**: `DataFlavor.allHtmlFlavor` (Windows CF_HTML soyutlar; Mac NSPasteboard yerine).
+  DİKKAT: JDK pano yolu (ClipboardTransferable→`translateBytes`) String temsilinde HTMLCodec'i
+  ATLAR → CF_HTML başlığı (`Version:0.9 StartHTML:...`) String'e dahil gelir;
+  `RichPaste.stripCfHtml` soyar (codec yalnız Reader/InputStream `translateStream` yolunda).
 - **Yollar**: `%APPDATA%\UDE\Antetler`, log `%LOCALAPPDATA%` (Mac `~/Library/...` yerine).
 - **Font**: arayüz `Segoe UI` (Mac `Helvetica Neue`); FOP/iText için **Liberation** gömülü
   (Mac sistem Arial/Times yerine — Windows'ta da sistem fontuna güvenmiyoruz).

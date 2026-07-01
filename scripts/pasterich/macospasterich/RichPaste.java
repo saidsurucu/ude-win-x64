@@ -37,6 +37,7 @@ public final class RichPaste {
         try {
             if (html == null || html.isEmpty()) return false;
             PrLog.dumpHtml(html);
+            html = stripCfHtml(html);
             UdeDoc.Document model = HtmlToUde.convert(html);
             if (model.body.isEmpty()) { PrLog.log("boş model"); return false; }
             boolean ok = NativeInsert.insert(editor, model, cursorAttrs);
@@ -76,9 +77,39 @@ public final class RichPaste {
         return false;
     }
 
+    /**
+     * Windows CF_HTML tanım başlığını soyar. JDK'da pano okuma ClipboardTransferable
+     * → DataTransferer.translateBytes üzerinden gider; String temsilli metin flavor'ları
+     * (allHtmlFlavor dahil) HTMLCodec'e UĞRAMADAN translateBytesToString'e düşer →
+     * "Version:0.9\r\nStartHTML:...\r\n...SourceURL:...\r\n" başlığı HTML'in başında
+     * String'e dahil gelir (codec yalnız Reader/InputStream temsillerindeki
+     * translateStream'e bağlı). Mac NSPasteboard'da bu başlık yok → Mac portunda
+     * soyma yoktu; Windows uyarlaması. Başlık offset'leri BAYT cinsinden ve eoln
+     * dönüşümü sonrası kaymış olabileceğinden offset yerine satır-anahtar taraması
+     * yapılır: ilk satır "Version:" ise bilinen anahtarlı satırlar atlanır.
+     */
+    static String stripCfHtml(String s) {
+        if (s == null || !s.startsWith("Version:")) return s;
+        String[] keys = { "Version:", "StartHTML:", "EndHTML:", "StartFragment:",
+                "EndFragment:", "StartSelection:", "EndSelection:", "SourceURL:" };
+        int i = 0, n = s.length();
+        while (i < n) {
+            boolean match = false;
+            for (String k : keys) {
+                if (s.startsWith(k, i)) { match = true; break; }
+            }
+            if (!match) break;
+            int eol = s.indexOf('\n', i);
+            if (eol < 0) return "";   /* tamamı başlık */
+            i = eol + 1;
+        }
+        return s.substring(i);
+    }
+
     /** Pano HTML'ini .udf (UDF zip) baytına çevirir; başarısızlıkta null. (Testler için.) */
     public static byte[] fromClipboardHtml(String html) {
         if (html == null || html.isEmpty()) return null;
+        html = stripCfHtml(html);
         try {
             Document doc = HtmlToUde.convert(html);
             if (doc.body.isEmpty()) { PrLog.log("boş belge (içerik yok)"); return null; }
