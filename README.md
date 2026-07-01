@@ -39,8 +39,9 @@ açık** — kapatmak için ilgili `-No…` bayrağı (bkz. *Manuel derleme*):
   Word-stili buton/sekme/combo/onay-kutusu/ipucu, nötr cetvel/kanvas. **Açık + koyu mod**
   (Windows sistem temasından, `AppsUseLightTheme`). Şeritte **renk-modu seçici** (Açık/Koyu/
   Sistem) + **canlı geçiş** (restart'sız) + koyu-belge onay kutusu. (`-NoSkin` ile kapatılır.)
-- 📋 **Stilli yapıştırma** — Word/tarayıcı/PDF'den kalın/italik/liste/**tablo**/renk biçimiyle
-  yapışır (Windows panosu `CF_HTML`). Formatsız Yapıştır (Ctrl+Shift+V).
+- 📋 **Akıllı yapıştırma** — Ctrl+V: UDE-içi kopya formatlı, harici içerik (Word/tarayıcı/PDF)
+  **formatsız** yapışır (tablo/liste/imaj yapısı korunur, biçim imleçten; Windows panosu `CF_HTML`).
+  Ctrl+Shift+V veya sağ tık "Formatlı Yapıştır": kaynak biçimiyle (kalın/italik/renk/**tablo**) yapıştırır.
 - 🖼️ **Görseller** — satır-içi imaj tam çözünürlük (bulanıklık yok), fare köşe-tutamağıyla
   boyutlandırma, panodan imajı kalitesini koruyarak yapıştırma.
 - ⌨️ **Düzenleme** — Backspace/Delete ile tablo silme, Otomatik Büyük Harf/Kelime Denetimi

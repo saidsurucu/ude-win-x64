@@ -52,7 +52,7 @@ bir `foreach` döngüsü (default-on, `$env:X -ne '0'`) veya ayrı bloklarla yö
 | **FOPFONTS** | PDF'te Türkçe harf (ğĞşŞıİ) | `editor.b.a` (FopFactory.newInstance→FopFonts.apply), `b.c` (awtToPdf→ITextFonts.map), `b.b` (getPageFormat→PageFix.a4) |
 | **CARETFIX** | Zoom imleç/tıklama hizası (sadece Faz-2) | `wp.prof.d.O` modelToView/viewToModel + `wp.textUtils.p.c` |
 | **ZOOMKEYS** | Ctrl+/Ctrl− klavye zoom | `WPAppManager.main` inject; zoom JSlider sür |
-| PASTERICH+PLAINPASTE | Stilli/formatsız yapıştırma | `text.hj` paste yolu; CF_HTML `DataFlavor.allHtmlFlavor` |
+| PASTERICH+PLAINPASTE | Stilli/formatsız yapıştırma; **Ctrl+V akıllı: UDE-içi formatlı, harici FORMATSIZ (varsayılan, 2026-07); Ctrl+Shift+V + sağ tık "Formatlı Yapıştır" = formatlı** | `text.hj` paste yolu; CF_HTML `DataFlavor.allHtmlFlavor`; `PasteMode` bayrağı; `PasteKeys` dispatcher (`WPAppManager.main` inject) |
 | SKIN | Düz Substance + Word widgets + açık/koyu + canlı geçiş | `SkinPatch` (~750 satır); `FlatUdeSkin`/`Dark`, `Word*`, `DarkMode`, `ModeSwitch`; **winlook.jar** -javaagent (renk-modu picker + canlı geçiş) |
 
 Obfuscated adlar platformlar arası **AYNI** (aynı UDE build'i) → Mac patcher'ları çoğunlukla

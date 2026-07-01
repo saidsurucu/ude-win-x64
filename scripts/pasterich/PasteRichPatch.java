@@ -2,6 +2,8 @@ import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
+import javassist.expr.ExprEditor;
+import javassist.expr.MethodCall;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -35,6 +37,12 @@ import java.io.FileOutputStream;
  * enjekte edilmiş olmalı (apply_pasterich sırası; Javassist insertBefore
  * derlemesi RichPaste'i jar classpath'inden çözer).
  *
+ * 2026-07: Enjekte dal RichPaste'i doğrudan değil macospasterich.PasteMode
+ * üzerinden çağırır — varsayılan formatsız, Ctrl+Shift+V/"Formatlı Yapıştır"
+ * forceRich bayrağıyla zengin yolu zorlar. Ayrıca WPAppManager.main başına
+ * PasteKeys.install() enjekte edilir (Ctrl+Shift+V dispatcher'ı). Spec:
+ * docs/superpowers/specs/2026-07-02-plain-paste-default-design.md
+ *
  * Argümanlar: <editor-app.jar> <out-dir>
  */
 public class PasteRichPatch {
@@ -67,18 +75,37 @@ public class PasteRichPatch {
             + "      if (__o instanceof java.lang.String) {"
             + "        java.lang.String __h = (java.lang.String) __o;"
             + "        if (__h.indexOf(\"uyap-web-editor-data\") < 0) {"
-            + "          if (macospasterich.RichPaste.insertInto(this, __h)) return true;"
+            + "          if (macospasterich.PasteMode.insertHtml(this, __h)) return true;"
             + "        }"
             + "      }"
             + "    } else if (__t != null) {"
-            + "      if (macospasterich.RichPaste.insertRtf(this, __t)) return true;"
+            + "      if (macospasterich.PasteMode.insertRtf(this, __t)) return true;"
             + "    }"
             + "  } catch (java.lang.Throwable __e) { macospasterich.RichPaste.logExternal(__e); }"
             + "}";
         a.insertBefore(src);
 
+        // Ctrl+Shift+V dispatcher'ı: WPAppManager.main başına PasteKeys.install().
+        // Idempotans: cagri zaten varsa atla (ZOOMKEYS/FILEASSOC ayni metoda dokunur;
+        // her patcher jar'i taze okur -> insertBefore'lar kompoze olur).
+        CtClass wp = pool.get("tr.com.havelsan.uyap.system.editor.common.WPAppManager");
+        CtMethod mainM = wp.getMethod("main", "([Ljava/lang/String;)V");
+        final boolean[] already = { false };
+        mainM.instrument(new ExprEditor() {
+            public void edit(MethodCall mc) {
+                if (mc.getClassName().equals("macospasterich.PasteKeys")) already[0] = true;
+            }
+        });
+        if (!already[0]) {
+            mainM.insertBefore("macospasterich.PasteKeys.install();");
+            writeClass(wp, outDir);
+            System.out.println("[PasteRichPatch] WPAppManager.main yamalandi (Ctrl+Shift+V formatli yapistir).");
+        } else {
+            System.out.println("[PasteRichPatch] WPAppManager.main zaten yamali; atlandi.");
+        }
+
         writeClass(hj, outDir);
-        System.out.println("[PasteRichPatch] hj.a(Transferable) harici-HTML dalı enjekte edildi.");
+        System.out.println("[PasteRichPatch] hj.a(Transferable) harici-HTML dalı enjekte edildi (varsayılan formatsız, PasteMode).");
     }
 
     private static void writeClass(CtClass cc, File outDir) throws Exception {
