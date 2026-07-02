@@ -25,7 +25,12 @@ function Invoke-Package {
   $jpackage = Join-Path $jdk17 'bin\jpackage.exe'
   $tmp = Join-Path $BuildDir 'jptmp'
   if (Test-Path $tmp) { Remove-Item $tmp -Recurse -Force }
-  Get-ChildItem $DistDir -Filter *.exe -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue
+  # Eski exe silinemezse (acik kurulum sihirbazi / OneDrive kilidi) jpackage sonda
+  # AccessDenied ile patlar; erken ve anlasilir hata ver.
+  Get-ChildItem $DistDir -Filter *.exe -ErrorAction SilentlyContinue | ForEach-Object {
+    try { Remove-Item $_.FullName -Force -ErrorAction Stop }
+    catch { throw "dist\$($_.Name) silinemiyor (dosya kilitli). Acik kurulum sihirbazlarini kapatin veya bilgisayari yeniden baslatip tekrar deneyin." }
+  }
 
   # --- ortam ---
   $env:PATH = "$wix;$env:PATH"
@@ -49,6 +54,9 @@ function Invoke-Package {
     #      Java 11 native HiDPI olceklemesi -> 4K/yuksek DPI'da KESKIN metin
     '--icon', (Join-Path $ResDir 'uyapicon.ico'),
     '--file-associations', (Join-Path $ResDir 'udf.properties'),
+    # Ozel WiX sablonu: Product Id="*" + IncludeMaximum=yes -> ayni-surum yeniden kurulum
+    # eski urunu kaldirip taze kurar (jpackage'in deterministik ProductCode tuzagi; scripts\wix\main.wxs)
+    '--resource-dir', (Join-Path $PSScriptRoot 'wix'),
     '--win-menu','--win-shortcut','--win-dir-chooser',
     '--description','Uyap Dokuman Editoru (gayriresmi Windows yapisi)',
     '--vendor', $Vendor,

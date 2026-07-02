@@ -102,6 +102,11 @@ Faz-2 zoom düzeltmesi port edildi), TEXTREPLACE (macOS sistem DB'si).
    void=tüm tablo). Açıkça **void f(int)** seç (`tableRemoveMethod`).
 7. **git push / jpackage "exit 255/1"**: PS git stderr'ini sarar; `local==remote` ile
    gerçek sonucu doğrula.
+8. **jpackage ProductCode deterministik** (name+version hash'i): aynı sürümü yeniden
+   derleyip kuran kullanıcıda MSI **bakım moduna** düşer, yeni dosyalar KURULMAZ (yamalar
+   kullanıcıya ulaşmaz). Çözüm: `scripts/wix/main.wxs` (`--resource-dir`) → `Product Id="*"`
+   + upgrade `IncludeMaximum="yes"`. JDK 17 güncellenince şablonu
+   `build\jptmp\config\main.wxs` ile diff'le (iki bilinçli fark dışında eşit kalmalı).
 
 ## Doğrulama yöntemleri
 
