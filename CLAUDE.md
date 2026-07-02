@@ -52,6 +52,7 @@ bir `foreach` döngüsü (default-on, `$env:X -ne '0'`) veya ayrı bloklarla yö
 | **FOPFONTS** | PDF'te Türkçe harf (ğĞşŞıİ) | `editor.b.a` (FopFactory.newInstance→FopFonts.apply), `b.c` (awtToPdf→ITextFonts.map), `b.b` (getPageFormat→PageFix.a4) |
 | **CARETFIX** | Zoom imleç/tıklama hizası (sadece Faz-2) | `wp.prof.d.O` modelToView/viewToModel + `wp.textUtils.p.c` |
 | **ZOOMKEYS** | Ctrl+/Ctrl− klavye zoom | `WPAppManager.main` inject; zoom JSlider sür |
+| **LINESPACING** | Satır aralığı menüsüne "1.5" ekle (satıcı unutmuş) | `a.b.a.a.M` kurucu 3. `addMenuButton` ("2.0") öncesine `JCommandMenuButton("1.5")`; dinleyici `O`→`LS15` bytecode kopya (1.15f→1.5f `$0.a(F)V` ExprEditor); `LsInject.make` yansıma fabrikası (obfuscate paket kaynakta FQCN ile anılamaz) |
 | PASTERICH+PLAINPASTE | Stilli/formatsız yapıştırma; **Ctrl+V akıllı: UDE-içi formatlı, harici FORMATSIZ (varsayılan, 2026-07); Ctrl+Shift+V + sağ tık "Formatlı Yapıştır" = formatlı** | `text.hj` paste yolu; CF_HTML `DataFlavor.allHtmlFlavor`; `PasteMode` bayrağı; `PasteKeys` dispatcher (`WPAppManager.main` inject) |
 | SKIN | Düz Substance + Word widgets + açık/koyu + canlı geçiş | `SkinPatch` (~750 satır); `FlatUdeSkin`/`Dark`, `Word*`, `DarkMode`, `ModeSwitch`; **winlook.jar** -javaagent (renk-modu picker + canlı geçiş) |
 

@@ -23,6 +23,7 @@ param(
   [switch]$NoCaretFix,
   [switch]$NoZoomKeys,
   [switch]$NoFileAssoc,
+  [switch]$NoLineSpacing,
   [switch]$Skin,
   [switch]$NoSkin,
   [switch]$Sign,
@@ -52,6 +53,7 @@ if ($NoFopFonts)      { $env:FOPFONTS = '0' }
 if ($NoCaretFix)      { $env:CARETFIX = '0' }
 if ($NoZoomKeys)      { $env:ZOOMKEYS = '0' }
 if ($NoFileAssoc)     { $env:FILEASSOC = '0' }
+if ($NoLineSpacing)   { $env:LINESPACING = '0' }
 if ($Skin)            { $env:SKIN = '1' }
 if ($NoSkin)          { $env:SKIN = '0' }
 if ($Sign)            { $env:SIGN  = '1' }

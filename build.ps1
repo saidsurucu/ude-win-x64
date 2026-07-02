@@ -20,6 +20,7 @@ param(
   [switch]$NoCaretFix,
   [switch]$NoZoomKeys,
   [switch]$NoFileAssoc,
+  [switch]$NoLineSpacing,
   [switch]$Skin,
   [switch]$NoSkin,
   [switch]$Sign,
