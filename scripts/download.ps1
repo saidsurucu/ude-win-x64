@@ -30,6 +30,9 @@ function Resolve-UdeUrl {
 function Merge-EditorJars($zipArchive, [string]$destJar, [string[]]$order) {
   $jars = @{}
   foreach ($e in $zipArchive.Entries) {
+    # macOS AppleDouble artiklari (._editor_lib.jar, __MACOSX/...) jar DEGILDIR;
+    # zip olarak acmaya calisirsak "End of Central Directory record could not be found".
+    if ($e.Name -like '._*' -or $e.FullName -like '*__MACOSX/*') { continue }
     if ($e.FullName -match '(?i)Contents/Java/([^/]+\.jar)$') { $jars[$Matches[1]] = $e }
   }
   # Info.plist'te anilmayan jar kalirsa (satici yeni jar eklerse) sona ekle.
@@ -68,8 +71,10 @@ function Merge-EditorJars($zipArchive, [string]$destJar, [string[]]$order) {
 }
 
 function Get-PlistText($zipArchive) {
-  # Sadece UYGULAMANIN Info.plist'i (gomulu zulu-8.jre'ninki degil).
-  $e = $zipArchive.Entries | Where-Object { $_.FullName -match '(?i)\.app/Contents/Info\.plist$' } | Select-Object -First 1
+  # Sadece UYGULAMANIN Info.plist'i (gomulu zulu-8.jre'ninki ve AppleDouble ._ artigi degil).
+  $e = $zipArchive.Entries |
+         Where-Object { $_.Name -notlike '._*' -and $_.FullName -match '(?i)\.app/Contents/Info\.plist$' } |
+         Select-Object -First 1
   if (-not $e) { return $null }
   $s = $e.Open(); $r = New-Object System.IO.StreamReader($s)
   $t = $r.ReadToEnd(); $r.Close(); $s.Close()
