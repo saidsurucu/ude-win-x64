@@ -19,7 +19,12 @@ $script:DistDir     = Join-Path $RepoRoot 'dist'
 # --- UDE sabitleri (editor-app.jar incelemesinden) ---
 $script:AppName     = 'UyapDokumanEditoru'   # ASCII; Start menu / installer adi
 $script:AppDisplay  = 'Uyap Dokuman Editoru'
-$script:AppVersion  = if ($env:UDE_VERSION) { $env:UDE_VERSION } else { '5.4.17' }
+# Surum: UDE_VERSION > indirilen paketin Info.plist'inden okunan deger > sabit yedek.
+# (download.ps1 paketten CFBundleVersion'i okuyup downloads\ude-version.txt'e yazar.)
+$script:AppVersion  = if ($env:UDE_VERSION) { $env:UDE_VERSION }
+                      elseif (Test-Path (Join-Path $DownloadDir 'ude-version.txt')) {
+                        (Get-Content (Join-Path $DownloadDir 'ude-version.txt') -Raw).Trim()
+                      } else { '5.4.19' }
 $script:MainJar     = 'editor-app.jar'
 $script:MainClass   = 'tr.com.havelsan.uyap.system.editor.common.WPAppManager'
 $script:AppArgs     = @('getNewWPInstance','EDITOR_TYPE_DOCUMENT')

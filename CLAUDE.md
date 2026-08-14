@@ -108,6 +108,21 @@ Faz-2 zoom düzeltmesi port edildi), TEXTREPLACE (macOS sistem DB'si).
    kullanıcıya ulaşmaz). Çözüm: `scripts/wix/main.wxs` (`--resource-dir`) → `Product Id="*"`
    + upgrade `IncludeMaximum="yes"`. JDK 17 güncellenince şablonu
    `build\jptmp\config\main.wxs` ile diff'le (iki bilinçli fark dışında eşit kalmalı).
+9. **Satıcı paket düzeni değişir** (UDE 5.4.19, 2026-08): indirme sayfasında link adı
+   `uyapdokumaneditoru*.zip` → **`UyapDokumanEditoru-AppleSilicon-<sürüm>.zip`** oldu
+   (büyük harf → harf-duyarlı regex "link bulunamadi" ile patlar; artık `(?i)` + Intel/ARM
+   ayrımı var) ve tek **`editor-app.jar` YEDİYE bölündü**: `editor_laf, editor_lib,
+   editor_lib2, editor_utility, jai_hvl, jdom, updater` (+ pakete gömülü `zulu-8.jre`).
+   Tüm yamalar tek jar varsaydığından `download.ps1` bunları **sınıf yolu sırasıyla**
+   (Info.plist `JVMClassPath`) yeniden birleştirir; aynı adlı girişte **ilk gelen kazanır**
+   (JVM davranışı). Doğrulandı: jar'lar imzasız, `META-INF/services` çakışmıyor, obfuscate
+   sınıf ADLARI 5.4.17 ile birebir aynı (yamalar aynen tuttu).
+   - **KRİTİK:** birleştirme **zip→zip** yapılmalı, diske AÇILMAMALI. Dosya sistemi
+     büyük/küçük harf duyarsız → `kx` ile `kX` birbirini ezer; ölçüldü: diske açan yol
+     **846 sınıfı sessizce yiyor** (24542 → 23696).
+   - Önbellek artık **sürüm-duyarlı**: `downloads\ude-src.url` damgası; sayfadaki link
+     değişince eski zip atılır (yoksa "güncelle" diyen kullanıcı eski sürümü yeniden
+     paketler). Sürüm de paketin `Info.plist`'inden (`CFBundleVersion`) okunur.
 
 ## Doğrulama yöntemleri
 
