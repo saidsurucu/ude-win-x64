@@ -123,6 +123,15 @@ Faz-2 zoom düzeltmesi port edildi), TEXTREPLACE (macOS sistem DB'si).
    - Önbellek artık **sürüm-duyarlı**: `downloads\ude-src.url` damgası; sayfadaki link
      değişince eski zip atılır (yoksa "güncelle" diyen kullanıcı eski sürümü yeniden
      paketler). Sürüm de paketin `Info.plist`'inden (`CFBundleVersion`) okunur.
+10. **Depo yolu ASCII olmayabilir** (Türkçe harf içeren kullanıcı adı). Dosyaya *yol* yazan
+    her yerde `Set-Content -Encoding ascii` KAYIPLIDIR → karakterler `?` olur. `udf.properties`
+    içindeki `icon=` bunu yaşadı: jpackage değeri `Path.of()` ile çözüyor, `?` Windows'ta yasak
+    karakter → `InvalidPathException: Illegal char <?>` → "Bundler EXE Installer Package
+    skipped because of a configuration problem" → exit 1 (ekranda `?` konsol artefaktı sanılıp
+    atlanmasın, dosyada gerçekten `?` var). Çözüm: ASCII-dışını Java properties `\uXXXX`
+    kaçışıyla yaz — dosya saf ASCII kalır ve `Properties.load` ISO-8859-1/UTF-8 fark etmeksizin
+    doğru çözer (düz UTF-8 yazmak bu garantiyi vermez). Komut satırı argümanları (jlink/jpackage
+    `--input`/`--icon`/`--dest`) aynı yolla sorunsuz geçiyor; sorun yalnız dosyaya yazarken.
 
 ## Doğrulama yöntemleri
 

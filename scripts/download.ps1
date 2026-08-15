@@ -160,13 +160,27 @@ function Invoke-Download {
   } finally { $z.Dispose() }
 
   # --- .udf dosya iliskilendirme properties (ileri-slash; Java properties escape sorunu icin) ---
+  # KRITIK: depo yolu ASCII-DISI olabilir (Turkce harf iceren kullanici adi vb.).
+  # "-Encoding ascii" bu karakterleri KAYIPLI sekilde '?' yapar; jpackage icon degerini
+  # Path.of() ile cozer ve '?' Windows'ta yasak karakterdir ->
+  #   InvalidPathException: Illegal char <?> at index 9: C:/Users/?????/...
+  #   -> "Bundler EXE Installer Package skipped because of a configuration problem" -> exit 1.
+  # Cozum: ASCII-disi karakterleri Java properties \uXXXX kacisiyla yaz. Dosya saf ASCII
+  # kalir; Properties.load kacisi kendi cozer, dolayisiyla jpackage ister ISO-8859-1
+  # (load(InputStream)) ister UTF-8 (load(Reader)) okusun sonuc dogru. UTF-8 yazmak
+  # bu garantiyi vermezdi (ISO-8859-1 okunursa mojibake olurdu).
   $kiIcon = (Join-Path $ResDir 'uyap_ki_icon.ico') -replace '\\','/'
-  @"
+  $props = @"
 extension=udf
 mime-type=application/x-uyap-udf
 description=Uyap Dokuman Editoru Belgesi
 icon=$kiIcon
-"@ | Set-Content -Path (Join-Path $ResDir 'udf.properties') -Encoding ascii
+"@
+  $sb = New-Object System.Text.StringBuilder
+  foreach ($ch in $props.ToCharArray()) {
+    if ([int]$ch -gt 126) { [void]$sb.Append('\u{0:x4}' -f [int]$ch) } else { [void]$sb.Append($ch) }
+  }
+  Set-Content -Path (Join-Path $ResDir 'udf.properties') -Value $sb.ToString() -Encoding ascii
   Write-Ok "kaynaklar hazir: $InputDir"
 }
 
