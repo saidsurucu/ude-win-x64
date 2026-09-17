@@ -23,6 +23,28 @@ Fazlar (`scripts/build.ps1` orkestrasyonu): **deps** (JDK 11+17 + WiX) → **dow
 `scripts/common.ps1` ortak yardımcıları/yolları tanımlar (`$InputDir`, `$MainJar`,
 `$BuildDir`, `$VendorDir`, `Get-Jdk11Home`, `Write-Ok`, `New-Dir`).
 
+### Sürüm kaynakları ve "Editörün yeni sürümü mevcut" diyaloğu (2026-09 teşhisi)
+
+Kaynak paket MAC Apple Silicon zip'idir (Java sınıfları platform-bağımsız); satıcı sayfası
+bugün **5.4.21** verirken UDE'nin kendi sürüm uç noktası
+(`http://editor.uyap.gov.tr/editorUpdaterYeni`, `Content-Disposition: filename="X.Y.Z.release"`)
+hâlâ **5.4.20** diyordu — iki kaynak ayrışabilir, zararsız. Diyalog mekanizması
+(`gui.lo`, bytecode'dan): uç nokta sürümü noktasız sayıya çevrilir (5.4.20→5420) ve jar'a
+**derleme-zamanında gömülü** `lo.g()` sabitiyle (`"54"+"21"`; hiçbir dosya/ayar okunmaz)
+karşılaştırılır; `lp.run` uzak > yerel ise diyalog basar. Sonuç 2 gün `%USERPROFILE%\.uki\
+acilisDegerleri.xml`'de (`editorVersiyon`, `editorVersiyonControl`) önbelleklenir. **Yani
+diyalog YALNIZ paketlenen UDE uç noktadakinden ESKİYSE çıkar**; "güncelleyiniz diyor" raporu
+= bayat kaynak kod/önbellekle eski sürüm paketlenmiş demektir (kur.ps1 artık ff-only düşünce
+temiz ağacı uzak dala hizalar + sonunda "Kurulan UDE surumu" basar). Doğrulama: kurulu
+uygulamanın `app\editor-app.jar`'ında `javap -classpath … …gui.lo | grep -A6 'static int g()'`
+ya da kur.ps1 çıktısındaki sürüm satırı.
+
+**5.4.21 durumu (2026-09-17):** Mac deposunda tam build (20 yama + skin) 5.4.21'e sorunsuz
+uygulandı ve uygulama diyalogsuz açıldı; bu deponun Javassist hedeflediği 30 obfuscate sınıfın
+tamamı 5.4.21 jar'ında mevcut ve Mac hedeflerinin alt kümesi. Windows EXE paketi bu tarihte
+YENİDEN ÜRETİLMEDİ (macOS'ta pwsh/Windows JDK yok) — ilk Windows build'inde `-Only patch`
+exit 0 beklenir.
+
 ## Apply deseni (her özellik)
 
 Obfuscated jar'a yama şu sırayla yapılır (apply-*.ps1 içinde):

@@ -23,7 +23,32 @@ Write-Host ""
 $haveGit = [bool](Get-Command git -ErrorAction SilentlyContinue)
 if ($haveGit -and (Test-Path (Join-Path $WorkDir '.git'))) {
   Say "repo guncelleniyor: $WorkDir"
-  git -C $WorkDir pull --ff-only | Out-Null
+  # KRITIK: git'in sifir-disi cikisi PowerShell'de HATA FIRLATMAZ. Eski hal "pull
+  # --ff-only" dusunce (gecmis ayrilmis / force-push) sessizce ESKI kaynak kodla devam
+  # ediyordu -> kullanici bayat betikle eski UDE surumunu paketliyor, UDE acilista
+  # "Editorun yeni surumu mevcut" diyor. Cozum (Mac kur.sh repo_update aynisi): ff-only
+  # duserse agac TEMIZSE uzak dala hizala; KIRLIyse dokunma (gelistirici kopyasi).
+  # NOT: git cagrilarinda "2>$null"/"2>&1" KULLANMA — Windows PowerShell 5.1'de
+  # ErrorActionPreference=Stop iken native stderr yonlendirmesi NativeCommandError
+  # olarak FIRLATIR ve betik olur; yonlendirmesiz stderr sadece ekrana yazilir.
+  git -C $WorkDir pull --ff-only --quiet | Out-Null
+  if ($LASTEXITCODE -ne 0) {
+    $dirty = git -C $WorkDir status --porcelain
+    if ($dirty) {
+      Write-Host "    UYARI: kaynak kodda yerel degisiklikler var; otomatik guncelleme atlandi." -ForegroundColor Yellow
+    } else {
+      Say "normal guncelleme yapilamadi; kaynak kod uzak surume hizalaniyor"
+      git -C $WorkDir fetch --quiet origin $Branch | Out-Null
+      if ($LASTEXITCODE -ne 0) {
+        Write-Host "    UYARI: uzak depoya erisilemedi (internet?); mevcut surumle devam ediliyor." -ForegroundColor Yellow
+      } else {
+        git -C $WorkDir reset --hard --quiet FETCH_HEAD | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+          Write-Host "    UYARI: hizalama basarisiz. Temiz kurulum icin klasoru silip komutu tekrar calistirin: $WorkDir" -ForegroundColor Yellow
+        }
+      }
+    }
+  }
 } elseif ($haveGit) {
   Say "repo klonlaniyor -> $WorkDir"
   if (Test-Path $WorkDir) { Remove-Item $WorkDir -Recurse -Force }
@@ -58,3 +83,10 @@ Start-Process -FilePath $exe.FullName
 Write-Host ""
 Write-Host "  Tamam. Kurulum sihirbazini tamamlayin." -ForegroundColor Green
 Write-Host "  EXE: $($exe.FullName)" -ForegroundColor Green
+# Paketlenen UDE surumu GORUNUR olsun: "guncelleyiniz diyor / eski surumde kaldim" tipi
+# raporlar tek bakista yanitlanabilsin (download.ps1 CFBundleVersion'i buraya yazar).
+$verFile = Join-Path $WorkDir 'downloads\ude-version.txt'
+if (Test-Path $verFile) {
+  $ver = (Get-Content $verFile -Raw).Trim()
+  if ($ver) { Write-Host "  Kurulan UDE surumu: $ver" -ForegroundColor Green }
+}
