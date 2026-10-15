@@ -52,6 +52,10 @@ açık** — kapatmak için ilgili `-No…` bayrağı (bkz. *Manuel derleme*):
   (gömülü tam-Unicode font; eski FOP base-14/Cp1252 bu harfleri düşürüyordu — platform-bağımsız hata).
 - 🔍 **Klavye/zoom** — `Ctrl +` / `Ctrl −` ile yakınlaştır/uzaklaştır; %100 dışı zoomda imleç ve
   tıklama hizası düzeltildi. Kaydet'te çoklu-format (UDF/RTF/PDF…) seçim penceresi.
+- ⚡ **Hızlı açılış** — UDE belgeyi tamponsuz, **bayt bayt** okuyordu (her bayt ayrı sistem
+  çağrısı, arayüz iş parçacığında); resimli büyük UDF'lerde saniyelerce donma artık yok.
+  Kelime Denetimi kapalıyken Türkçe sözlük (Zemberek) açılışta yüklenmez (~0,4 sn + ~8 MB
+  bellek tasarrufu); sağ tık yazım önerileri her seferinde sözlüğü yeniden kurmaz.
 
 ## 👩‍⚖️ Kolay kurulum — tek satır
 
@@ -126,7 +130,8 @@ cd ude-win-x64
 (`-NoPasteRich`), formatsız yapıştırma (`-NoPlainPaste`), panodan imaj (`-NoPasteImg`),
 satır-içi imaj tam-çöz (`-NoImgFull`), imaj boyutlandırma (`-NoImgResize`), antet
 (`-NoAntet`), taze PDF (`-NoPdfFresh`), PDF'te Türkçe harf (`-NoFopFonts`), zoom imleç
-hizası (`-NoCaretFix`), Ctrl+/Ctrl− klavye zoom (`-NoZoomKeys`).
+hizası (`-NoCaretFix`), Ctrl+/Ctrl− klavye zoom (`-NoZoomKeys`), tamponlu belge okuma
+(`-NoBufRead`), tembel Zemberek yüklemesi (`-NoZemberekLazy`).
 
 > **NOT:** Çıktıyı dosyaya yönlendirmeyin (`>`, `2>&1`, `| Tee`). javac'in bilgi-amaçlı
 > "Note: deprecated API" satırı PowerShell 5.1'de yönlendirilince build'i durdurur. Düz

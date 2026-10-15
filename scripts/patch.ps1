@@ -69,6 +69,7 @@ function Invoke-Patch {
     @{ env='IMGRESIZE'; name='IMGRESIZE'; script='imgresize\apply-imgresize.ps1' },
     @{ env='ANTET';     name='ANTET';     script='antet\apply-antet.ps1' },
     @{ env='PDFFRESH';  name='PDFFRESH';  script='pdffresh\apply-pdffresh.ps1' },
+    @{ env='BUFREAD';   name='BUFREAD';   script='bufread\apply-bufread.ps1' },
     @{ env='PASTEIMG';  name='PASTEIMG';  script='pasteimg\apply-pasteimg.ps1' },
     @{ env='FOPFONTS';  name='FOPFONTS';  script='fopfonts\apply-fopfonts.ps1' },
     @{ env='CARETFIX';  name='CARETFIX';  script='caretfix\apply-caretfix.ps1' },
@@ -95,6 +96,17 @@ function Invoke-Patch {
       Write-Ok ("PASTERICH uygulaniyor" + $(if($pp){' + PLAINPASTE'}))
       & $prScript -Jar $jar -PlainPaste:$pp
     } else { Write-Warn2 "pasterich\apply-pasterich.ps1 yok; atlaniyor" }
+  }
+
+  # --- ZEMBEREKLAZY (varsayilan ACIK, =0 kapatir) - PASTERICH/PLAINPASTE'ten SONRA (ikisi de text.fK yazar) ---
+  if ($env:ZEMBEREKLAZY -eq '0') {
+    Write-Ok "zemberek tembel yukleme kapali (ZEMBEREKLAZY=0)"
+  } else {
+    $zbScript = Join-Path $PSScriptRoot 'zemberek\apply-zemberek.ps1'
+    if (Test-Path $zbScript) {
+      Write-Ok "ZEMBEREKLAZY uygulaniyor"
+      & $zbScript -Jar $jar
+    } else { Write-Warn2 "zemberek\apply-zemberek.ps1 yok; atlaniyor" }
   }
 
   # --- SKIN (modern duz gorunum; varsayilan ACIK, SKIN=0 kapatir) ---

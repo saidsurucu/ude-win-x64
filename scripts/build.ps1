@@ -18,6 +18,8 @@ param(
   [switch]$NoImgResize,
   [switch]$NoAntet,
   [switch]$NoPdfFresh,
+  [switch]$NoBufRead,
+  [switch]$NoZemberekLazy,
   [switch]$NoPasteImg,
   [switch]$NoFopFonts,
   [switch]$NoCaretFix,
@@ -48,6 +50,8 @@ if ($NoImgFull)       { $env:IMGFULL = '0' }
 if ($NoImgResize)     { $env:IMGRESIZE = '0' }
 if ($NoAntet)         { $env:ANTET = '0' }
 if ($NoPdfFresh)      { $env:PDFFRESH = '0' }
+if ($NoBufRead)       { $env:BUFREAD = '0' }
+if ($NoZemberekLazy)  { $env:ZEMBEREKLAZY = '0' }
 if ($NoPasteImg)      { $env:PASTEIMG = '0' }
 if ($NoFopFonts)      { $env:FOPFONTS = '0' }
 if ($NoCaretFix)      { $env:CARETFIX = '0' }

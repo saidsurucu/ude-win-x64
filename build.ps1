@@ -15,6 +15,8 @@ param(
   [switch]$NoImgResize,
   [switch]$NoAntet,
   [switch]$NoPdfFresh,
+  [switch]$NoBufRead,
+  [switch]$NoZemberekLazy,
   [switch]$NoPasteImg,
   [switch]$NoFopFonts,
   [switch]$NoCaretFix,
