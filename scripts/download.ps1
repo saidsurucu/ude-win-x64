@@ -100,6 +100,48 @@ function Get-UdeVersion($zipArchive) {
   return $null
 }
 
+# Indirme, kullanici makinelerinde cesitli sebeplerle duser (2026-10 sahadan rapor):
+#  - Windows curl (schannel) sertifika iptal kontrolu: antivirus HTTPS taramasi / kurum
+#    proxy'si / erisilemeyen CRL -> exit 35 CRYPT_E_NO_REVOCATION_CHECK.
+#  - kopan baglanti: rayp.adalet.gov.tr ara sira "Connection was reset" (exit 56)
+#    veriyor; gelistirici makinesinde de ilk denemede yasandi, ikincisi gecti.
+# Sirayla: curl (retry) -> curl --ssl-no-revoke -> Invoke-WebRequest. -sS: sessiz ama
+# HATAYI GOSTER (eskiden -s hatayi yutuyordu, kullanici sadece "indirilemedi" goruyordu).
+function Test-ZipFile([string]$path) {
+  if (-not (Test-Path $path)) { return $false }
+  if ((Get-Item $path).Length -lt 1MB) { return $false }   # HTML hata sayfasi vb.
+  $fs = [System.IO.File]::OpenRead($path)
+  try { return ($fs.ReadByte() -eq 0x50 -and $fs.ReadByte() -eq 0x4B) } finally { $fs.Close() }
+}
+
+function Get-UdeZip([string]$url, [string]$dest) {
+  $attempts = @(
+    @{ name = 'curl';                 args = @() },
+    @{ name = 'curl --ssl-no-revoke'; args = @('--ssl-no-revoke') }
+  )
+  foreach ($a in $attempts) {
+    if (Test-Path $dest) { Remove-Item $dest -Force }
+    $curlArgs = @('-L', '-sS', '--fail', '--retry', '3', '--retry-delay', '2', '--connect-timeout', '30') + $a.args + @('-o', $dest, $url)
+    & curl.exe @curlArgs
+    $code = $LASTEXITCODE
+    if ($code -eq 0 -and (Test-ZipFile $dest)) { $global:LASTEXITCODE = 0; return $true }
+    Write-Ok "$($a.name) basarisiz (exit $code); siradaki yontem deneniyor"
+  }
+  try {
+    if (Test-Path $dest) { Remove-Item $dest -Force }
+    [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+    $oldPp = $ProgressPreference; $ProgressPreference = 'SilentlyContinue'   # PS 5.1'de ilerleme cubugu indirmeyi cok yavaslatir
+    try { Invoke-WebRequest -Uri $url -OutFile $dest -UseBasicParsing } finally { $ProgressPreference = $oldPp }
+    # Onceki curl denemelerinin exit kodu sizmasin (cagiran $LASTEXITCODE'a bakabilir).
+    if (Test-ZipFile $dest) { $global:LASTEXITCODE = 0; return $true }
+    Write-Ok "Invoke-WebRequest: indirilen dosya gecerli bir zip degil"
+  } catch {
+    Write-Ok "Invoke-WebRequest basarisiz: $($_.Exception.Message)"
+  }
+  if (Test-Path $dest) { Remove-Item $dest -Force }
+  return $false
+}
+
 function Invoke-Download {
   Write-Step "UDE paketi indiriliyor"
   New-Dir $DownloadDir; New-Dir $InputDir; New-Dir $ResDir
@@ -116,8 +158,7 @@ function Invoke-Download {
     Remove-Item $zip -Force
   }
   if (-not (Test-Path $zip)) {
-    & curl.exe -L -s -o $zip $url
-    if ($LASTEXITCODE -ne 0 -or -not (Test-Path $zip)) { throw "UDE paketi indirilemedi" }
+    if (-not (Get-UdeZip $url $zip)) { throw "UDE paketi indirilemedi (ag/antivirus/proxy? yukaridaki hata satirlarina bakin)" }
     Set-Content -Path $stamp -Value $url -Encoding ascii
   }
   Write-Ok "indirildi: $([math]::Round((Get-Item $zip).Length/1MB,1)) MB"
